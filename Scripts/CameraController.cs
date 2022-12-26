@@ -2,6 +2,7 @@ namespace Project2D;
 
 public partial class CameraController : Camera2D
 {
+	private float ZoomIncrementDefault { get; set; } = 0.02f;
 	private float ZoomIncrement { get; set; } = 0.02f;
 	private float TargetZoom { get; set; }
 	private float MinZoom { get; set; } = 0.01f;
@@ -34,6 +35,7 @@ public partial class CameraController : Camera2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		ZoomIncrement = ZoomIncrementDefault * Zoom.x;
 		Zoom = Lerp(Zoom, new Vector2(TargetZoom, TargetZoom), 0.25f);
 	}
 
