@@ -26,4 +26,5 @@ script = ExtResource("2_gm064")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
+position_smoothing_enabled = true
 script = ExtResource("3_vbehi")
