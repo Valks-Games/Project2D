@@ -1,8 +1,8 @@
 // Simplex Noise for C#
-// Copyright © Benjamin Ward 2019
+// Copyright Benjamin Ward 2019
 // See LICENSE https://github.com/WardBenjamin/SimplexNoise/blob/master/LICENSE.txt
 // Simplex Noise implementation offering 1D, 2D, and 3D forms w/ values in the range of 0 to 255.
-// Based on work by Heikki Törmälä (2012) and Stefan Gustavson (2006).
+// Based on work by Heikki Tormala (2012) and Stefan Gustavson (2006).
 
 using System;
 
