@@ -9,7 +9,6 @@ global using System.Text.RegularExpressions;
 global using System.Threading.Tasks;
 global using System.Linq;
 
-using SimplexNoise;
 using Noise = SimplexNoise.Noise;
 
 namespace Project2D;
