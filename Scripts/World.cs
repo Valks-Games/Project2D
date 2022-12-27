@@ -33,7 +33,7 @@ public partial class World : TileMap
 	private float MoistureFrequency { get; set; } = 0.005f;
 	private float MoistureOffset { get; set; } = -30;
 	private float HeatFrequency { get; set; } = 0.005f;
-	private float HeatOffset { get; set; } = 250;
+	private float HeatOffset { get; set; } = 150;
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
 	private BiomeType[,] BiomeTable { get; set; } = new BiomeType[6, 6]
 	{
