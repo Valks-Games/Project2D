@@ -22,10 +22,10 @@ public partial class UIWorldSettings : Node
 		World = GetNode<World>(NodePathWorld);
 
 		// Set values from what is set in the UI
-		WorldSettings.MoistureOffset = (float)GetNode<Slider>(NodePathMoistureIntensity).Value;
+		WorldSettings.MoistureIntensity = (float)GetNode<Slider>(NodePathMoistureIntensity).Value;
 		WorldSettings.MoistureFrequency = (float)GetNode<Slider>(NodePathMoistureFrequency).Value;
 		WorldSettings.MoistureSeed = GetNode<LineEdit>(NodePathMoistureSeed).Text;
-		WorldSettings.TemperatureOffset = (float)GetNode<Slider>(NodePathTemperatureIntensity).Value;
+		WorldSettings.TemperatureIntensity = (float)GetNode<Slider>(NodePathTemperatureIntensity).Value;
 		WorldSettings.TemperatureFrequency = (float)GetNode<Slider>(NodePathTemperatureFrequency).Value;
 		WorldSettings.TemperatureSeed = GetNode<LineEdit>(NodePathTemperatureSeed).Text;
 		UpdateOnEdit = GetNode<CheckBox>(NodePathUpdateOnEdit).ButtonPressed;
@@ -37,7 +37,7 @@ public partial class UIWorldSettings : Node
 
 	private void _on_moisture_offset_value_changed(float v)
 	{
-		WorldSettings.MoistureOffset = v;
+		WorldSettings.MoistureIntensity = v;
 		UpdateWorldOnEdit();
 	}
 
@@ -55,7 +55,7 @@ public partial class UIWorldSettings : Node
 
 	private void _on_temperature_offset_value_changed(float v)
 	{
-		WorldSettings.TemperatureOffset = v;
+		WorldSettings.TemperatureIntensity = v;
 		UpdateWorldOnEdit();
 	}
 
@@ -93,10 +93,10 @@ public partial class UIWorldSettings : Node
 public class WorldSettings
 {
 	public int ChunkSize { get; set; }
-	public float MoistureOffset { get; set; }
+	public float MoistureIntensity { get; set; }
 	public float MoistureFrequency { get; set; }
 	public string MoistureSeed { get; set; }
-	public float TemperatureOffset { get; set; }
+	public float TemperatureIntensity { get; set; }
 	public float TemperatureFrequency { get; set; }
 	public string TemperatureSeed { get; set; }
 }

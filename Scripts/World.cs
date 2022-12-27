@@ -9,8 +9,6 @@ global using System.Text.RegularExpressions;
 global using System.Threading.Tasks;
 global using System.Linq;
 
-using Noise = SimplexNoise.Noise;
-
 namespace Project2D;
 
 public enum BiomeType
@@ -29,6 +27,9 @@ public enum BiomeType
 
 public partial class World : TileMap
 {
+	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Voronoi;
+	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex;
+
 	private WorldSettings WorldSettings { get; set; } = new() 
 	{
 		ChunkSize = 300, // required otherwise PreChunkSize will not work correctly for the first run
@@ -62,8 +63,11 @@ public partial class World : TileMap
 		PrevChunkSize = WorldSettings.ChunkSize;
 		WorldSettings = settings;
 
-		var moisture = CalcNoise(settings.MoistureFrequency, settings.MoistureSeed.GetHashCode());
-		var heat = CalcNoise(settings.TemperatureFrequency, settings.TemperatureSeed.GetHashCode());
+		MoistureNoise.Frequency = settings.MoistureFrequency;
+		MoistureNoise.Seed = settings.MoistureSeed.GetHashCode();
+
+		HeatNoise.Frequency = settings.TemperatureFrequency;
+		HeatNoise.Seed = settings.TemperatureSeed.GetHashCode();
 
 		var biomes = new Dictionary<BiomeType, Biome>
 		{
@@ -82,8 +86,8 @@ public partial class World : TileMap
 		for (int x = 0; x < settings.ChunkSize; x++)
 			for (int z = 0; z < settings.ChunkSize; z++)
 			{
-				var moistureValue = moisture[x, z] + settings.MoistureOffset;
-				var heatValue = heat[x, z] + settings.TemperatureOffset;
+				var moistureValue = Mathf.Clamp(MoistureNoise.GetNoise2d(x, z) + 1 + settings.MoistureIntensity   , 0, 1);
+				var heatValue     = Mathf.Clamp(    HeatNoise.GetNoise2d(x, z) + 1 + settings.TemperatureIntensity, 0, 1);
 
 				// Generate the tiles
 				var biome = GetBiome(moistureValue, heatValue);
@@ -101,27 +105,10 @@ public partial class World : TileMap
 
 	private BiomeType GetBiome(float moistureNoise, float heatNoise)
 	{
-		var moistureType = RemapNoise(moistureNoise, 0, BiomeTable.GetLength(0) - 1);
-		var heatType = RemapNoise(heatNoise, 0, BiomeTable.GetLength(0) - 1);
+		var moistureType = moistureNoise.Remap(0, 1, 0, BiomeTable.GetLength(0) - 1);
+		var heatType = heatNoise.Remap(0, 1, 0, BiomeTable.GetLength(0) - 1);
 
 		return BiomeTable[(int)moistureType, (int)heatType];
-	}
-
-	private float RemapNoise(float noise, float min, float max)
-	{
-		// Ensure noise is between these values
-		noise = Mathf.Clamp(noise, 0, 241.19427f);
-
-		return noise.Remap(0, 241.19427f, min, max);
-	}
-
-	// Seems to calculate values between 0 and ~241.19427 (frequency has a small impact on max value)
-	public float[,] CalcNoise(float frequency, int seed = 0)
-	{
-		if (seed != 0)
-			Noise.Seed = seed;
-
-		return Noise.Calc2D(WorldSettings.ChunkSize, WorldSettings.ChunkSize, frequency);
 	}
 
 	public void SetTile(int worldX, int worldZ, int tileX = 0, int tileY = 0) =>

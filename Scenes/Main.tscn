@@ -100,8 +100,9 @@ text = "Intensity"
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
-min_value = -200.0
-max_value = 200.0
+min_value = -1.0
+max_value = 1.0
+step = 0.01
 
 [node name="Frequency" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox"]
 layout_mode = 2
@@ -162,8 +163,9 @@ text = "Intensity"
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
-min_value = -200.0
-max_value = 200.0
+min_value = -1.0
+max_value = 1.0
+step = 0.01
 
 [node name="Frequency" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox"]
 layout_mode = 2
