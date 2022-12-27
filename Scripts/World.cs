@@ -31,9 +31,7 @@ public partial class World : TileMap
 {
 	private int Size { get; set; } = 300;
 	private float MoistureFrequency { get; set; } = 0.005f;
-	private float MoistureOffset { get; set; } = -30;
 	private float HeatFrequency { get; set; } = 0.005f;
-	private float HeatOffset { get; set; } = 150;
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
 	private BiomeType[,] BiomeTable { get; set; } = new BiomeType[6, 6]
 	{
@@ -47,6 +45,11 @@ public partial class World : TileMap
 	};
 
 	public override void _Ready()
+	{
+		Generate();
+	}
+
+	public void Generate(float MoistureOffset = 0, float HeatOffset = 0)
 	{
 		var moisture = CalcNoise(MoistureFrequency);
 		var heat = CalcNoise(HeatFrequency);

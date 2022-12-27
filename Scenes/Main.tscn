@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bxjlhk1v4bft6"]
+[gd_scene load_steps=7 format=3 uid="uid://bxjlhk1v4bft6"]
 
 [ext_resource type="Texture2D" uid="uid://dredgu5n4wqee" path="res://Art/tiles.png" id="1_3te00"]
 [ext_resource type="Script" path="res://Scripts/World.cs" id="2_gm064"]
 [ext_resource type="Script" path="res://Scripts/CameraController.cs" id="3_vbehi"]
+[ext_resource type="Script" path="res://Scripts/UI/UIWorldSettings.cs" id="4_pbrw8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ftr1a"]
 texture = ExtResource("1_3te00")
@@ -35,3 +36,72 @@ current = true
 zoom = Vector2(0.03, 0.03)
 position_smoothing_enabled = true
 script = ExtResource("3_vbehi")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UIWorldSettings" type="PanelContainer" parent="CanvasLayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -344.0
+offset_top = -76.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("4_pbrw8")
+NodePathWorld = NodePath("../../TileMap")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer"]
+layout_mode = 2
+
+[node name="Moisture" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/HBoxContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Moisture"
+
+[node name="Moisture" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 1
+min_value = -200.0
+max_value = 200.0
+
+[node name="Temperature" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/HBoxContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Temperature"
+
+[node name="Temperature" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 1
+min_value = -200.0
+max_value = 200.0
+
+[node name="Generate" type="Button" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Generate"
+
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/HBoxContainer/Moisture" to="CanvasLayer/UIWorldSettings" method="_on_moisture_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/HBoxContainer/Temperature" to="CanvasLayer/UIWorldSettings" method="_on_temperature_value_changed"]
+[connection signal="pressed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Generate" to="CanvasLayer/UIWorldSettings" method="_on_generate_pressed"]
