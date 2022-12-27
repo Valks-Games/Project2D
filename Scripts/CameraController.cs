@@ -53,7 +53,7 @@ public partial class CameraController : Camera2D
 		ZoomIncrement = ZoomIncrementDefault * Zoom.x;
 
 		// Lerp to the target zoom for a smooth effect
-		Zoom.Lerp(new Vector2(TargetZoom, TargetZoom), SmoothFactor);
+		Zoom = Zoom.Lerp(new Vector2(TargetZoom, TargetZoom), SmoothFactor);
 	}
 
 	// Not sure if this should be done in _Input or _UnhandledInput
