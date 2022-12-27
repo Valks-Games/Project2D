@@ -30,8 +30,10 @@ public enum BiomeType
 public partial class World : TileMap
 {
 	private int Size { get; set; } = 300;
-	private float FrequencyMoisture { get; set; } = 0.02f;
-	private float FrequencyHeat { get; set; } = 0.01f;
+	private float MoistureFrequency { get; set; } = 0.005f;
+	private float MoistureOffset { get; set; } = -30;
+	private float HeatFrequency { get; set; } = 0.005f;
+	private float HeatOffset { get; set; } = 250;
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
 	private BiomeType[,] BiomeTable { get; set; } = new BiomeType[6, 6]
 	{
@@ -46,8 +48,8 @@ public partial class World : TileMap
 
 	public override void _Ready()
 	{
-		var moisture = CalcNoise(FrequencyMoisture);
-		var heat = CalcNoise(FrequencyHeat);
+		var moisture = CalcNoise(MoistureFrequency);
+		var heat = CalcNoise(HeatFrequency);
 
 		var biomes = new Dictionary<BiomeType, Biome>
 		{
@@ -66,14 +68,17 @@ public partial class World : TileMap
 		for (int x = 0; x < Size; x++)
 			for (int z = 0; z < Size; z++)
 			{
+				var moistureValue = moisture[x, z] + MoistureOffset;
+				var heatValue = heat[x, z] + HeatOffset;
+
 				// Generate the tiles
-				var biome = GetBiome(moisture[x, z], heat[x, z]);
+				var biome = GetBiome(moistureValue, heatValue);
 				biomes[biome].Generate(x, z);
 
 				// Store information about each tile
 				var tile = new Tile();
-				tile.Moisture = moisture[x, z];
-				tile.Heat = heat[x, z];
+				tile.Moisture = moistureValue;
+				tile.Heat = heatValue;
 				tile.BiomeType = biome;
 
 				Tiles[new Vector2(x, z)] = tile;
@@ -88,8 +93,13 @@ public partial class World : TileMap
 		return BiomeTable[(int)moistureType, (int)heatType];
 	}
 
-	private float RemapNoise(float noise, float min, float max) =>
-		noise.Remap(0, 241.19427f, min, max);
+	private float RemapNoise(float noise, float min, float max)
+	{
+		// Ensure noise is between these values
+		noise = Mathf.Clamp(noise, 0, 241.19427f);
+
+		return noise.Remap(0, 241.19427f, min, max);
+	}
 
 	// Seems to calculate values between 0 and ~241.19427 (frequency has a small impact on max value)
 	public float[,] CalcNoise(float frequency, int seed = 0)
