@@ -3,17 +3,21 @@
 public class BiomeTropicalRainForest : Biome
 {
 	private World World { get; set; }
+	private float[,] Noise { get; set; }
 
 	public BiomeTropicalRainForest(World world)
 	{
 		World = world;
+		Noise = World.CalcNoise(0.02f);
 	}
 
-	public override void Generate(int x, int z, float amplitude)
+	public override void Generate(int x, int z)
 	{
-		if (amplitude < 50)
+		var noiseValue = Noise[x, z];
+
+		if (noiseValue < 50)
 			World.SetTile(x, z, 4);
-		else if (amplitude is >= 50 and <= 200)
+		else if (noiseValue is >= 50 and <= 200)
 			World.SetTile(x, z, 5);
 		else
 			World.SetTile(x, z, 6);

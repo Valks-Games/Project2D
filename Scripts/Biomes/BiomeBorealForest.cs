@@ -9,7 +9,7 @@ public class BiomeBorealForest : Biome
 		World = world;
 	}
 
-	public override void Generate(int x, int z, float amplitude)
+	public override void Generate(int x, int z)
 	{
 		World.SetTile(x, z, 2);
 	}

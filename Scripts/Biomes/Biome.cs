@@ -2,5 +2,5 @@
 
 public abstract class Biome
 {
-	public abstract void Generate(int x, int z, float amplitude);
+	public abstract void Generate(int x, int z);
 }

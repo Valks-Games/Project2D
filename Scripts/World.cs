@@ -30,8 +30,6 @@ public enum BiomeType
 public partial class World : TileMap
 {
 	private int Size { get; set; } = 300;
-	private int SeedTiles { get; set; } = 209323094;
-	private int SeedBiomes { get; set; } = 309333032;
 	private float FrequencyMoisture { get; set; } = 0.02f;
 	private float FrequencyHeat { get; set; } = 0.01f;
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
@@ -48,9 +46,8 @@ public partial class World : TileMap
 
 	public override void _Ready()
 	{
-		var moisture = CalcNoise(SeedTiles, FrequencyMoisture);
-		var heat = CalcNoise(SeedBiomes, FrequencyHeat);
-		var amplitude = CalcNoise(SeedTiles, FrequencyMoisture);
+		var moisture = CalcNoise(FrequencyMoisture);
+		var heat = CalcNoise(FrequencyHeat);
 
 		var biomes = new Dictionary<BiomeType, Biome>
 		{
@@ -71,7 +68,7 @@ public partial class World : TileMap
 			{
 				// Generate the tiles
 				var biome = GetBiome(moisture[x, z], heat[x, z]);
-				biomes[biome].Generate(x, z, amplitude[x, z]);
+				biomes[biome].Generate(x, z);
 
 				// Store information about each tile
 				var tile = new Tile();
@@ -95,9 +92,11 @@ public partial class World : TileMap
 		noise.Remap(0, 241.19427f, min, max);
 
 	// Seems to calculate values between 0 and ~241.19427 (frequency has a small impact on max value)
-	private float[,] CalcNoise(int seed, float frequency)
+	public float[,] CalcNoise(float frequency, int seed = 0)
 	{
-		Noise.Seed = seed;
+		if (seed != 0)
+			Noise.Seed = seed;
+
 		return Noise.Calc2D(Size, Size, frequency);
 	}
 
