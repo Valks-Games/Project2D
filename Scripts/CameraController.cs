@@ -8,6 +8,7 @@ public partial class CameraController : Camera2D
 	private float TargetZoom { get; set; }
 	private float MinZoom { get; set; } = 0.01f;
 	private float MaxZoom { get; set; } = 1.0f;
+	private float SmoothFactor { get; set; } = 0.25f;
 
 	// Panning
 	private Vector2 InitialPanPosition { get; set; }
@@ -52,7 +53,7 @@ public partial class CameraController : Camera2D
 		ZoomIncrement = ZoomIncrementDefault * Zoom.x;
 
 		// Lerp to the target zoom for a smooth effect
-		Zoom = Lerp(Zoom, new Vector2(TargetZoom, TargetZoom), 0.25f);
+		Zoom.Lerp(new Vector2(TargetZoom, TargetZoom), SmoothFactor);
 	}
 
 	// Not sure if this should be done in _Input or _UnhandledInput
@@ -103,7 +104,4 @@ public partial class CameraController : Camera2D
 		// Clamp the zoom
 		TargetZoom = Mathf.Clamp(TargetZoom, MinZoom, MaxZoom);
 	}
-
-	private Vector2 Lerp(Vector2 v1, Vector2 v2, float t) =>
-		new Vector2(Mathf.Lerp(v1.x, v2.x, t), Mathf.Lerp(v1.y, v2.y, t));
 }
