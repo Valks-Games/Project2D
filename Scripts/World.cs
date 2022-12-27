@@ -31,7 +31,7 @@ public partial class World : TileMap
 
 				if (amplitude < 50)
 					SetTile(x, z);
-				else if (amplitude >= 50 && amplitude <= 200)
+				else if (amplitude is >= 50 and <= 200)
 					SetTile(x, z, 1);
 				else
 					SetTile(x, z, 3);
