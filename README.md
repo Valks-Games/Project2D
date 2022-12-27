@@ -4,6 +4,8 @@
 
 Playing around with biome generation, might become something more, who knows.
 
+Contact me on Discord `valk#9904` for any questions you may have.
+
 ## Roadmap
 - [ ] expand biome table to also include a 3rd parameter "elevation" / add mountain and hilly biomes
 - [ ] figure out how to get more control over the shape and size of each biome
