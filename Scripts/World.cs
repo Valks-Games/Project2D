@@ -30,9 +30,9 @@ public partial class World : TileMap
 			for (int z = 0; z < Size; z++)
 			{
 				var amplitude = noiseAmplitude[x, z];
-				var biome = noiseBiome[x, z];
+				var biome = GetBiome(noiseBiome[x, z]);
 
-				if (biome > 100)
+				if (biome == Biome.TropicalRainForest)
 				{
 					// Biome 1
 
@@ -43,13 +43,27 @@ public partial class World : TileMap
 					else
 						SetTile(x, z, 3);
 				}
-				else
+				else if (biome == Biome.Ocean)
 				{
 					// Biome 2
 
-					SetTile(x, z);
+					SetTile(x, z, 3);
 				}
 			}
+	}
+
+	private Biome GetBiome(float noise)
+	{
+		if (noise < 100)
+			return Biome.TropicalRainForest;
+		else
+			return Biome.Ocean;
+	}
+
+	private enum Biome
+	{
+		TropicalRainForest,
+		Ocean
 	}
 
 	private float[,] CalcNoise(int seed, float frequency)
