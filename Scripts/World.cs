@@ -29,9 +29,12 @@ public enum BiomeType
 
 public partial class World : TileMap
 {
-	private int Size { get; set; } = 300;
-	private float MoistureFrequency { get; set; } = 0.005f;
-	private float HeatFrequency { get; set; } = 0.005f;
+	private WorldSettings WorldSettings { get; set; } = new() 
+	{
+		ChunkSize = 300, // required otherwise PreChunkSize will not work correctly for the first run
+		// must be set to whatever chunkSize is set in the UI
+		// not ideal, but this is how it has to be for now
+	};
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
 	private BiomeType[,] BiomeTable { get; set; } = new BiomeType[6, 6]
 	{
@@ -43,16 +46,24 @@ public partial class World : TileMap
 		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.BorealForest, BiomeType.SeasonalForest,      BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest}, // WETTER
 		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.BorealForest, BiomeType.TemperateRainforest, BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest}  // WETTEST
 	};
+	public int PrevChunkSize { get; set; }
 
-	public override void _Ready()
+	public void DeleteWorld()
 	{
-		Generate();
+		for (int x = 0; x < PrevChunkSize; x++)
+			for (int z = 0; z < PrevChunkSize; z++)
+				SetCell(0, new Vector2i(-PrevChunkSize / 2, -PrevChunkSize / 2) + new Vector2i(x, z));
 	}
 
-	public void Generate(float MoistureOffset = 0, float HeatOffset = 0)
+	public void Generate(WorldSettings settings)
 	{
-		var moisture = CalcNoise(MoistureFrequency);
-		var heat = CalcNoise(HeatFrequency);
+		DeleteWorld();
+
+		PrevChunkSize = WorldSettings.ChunkSize;
+		WorldSettings = settings;
+
+		var moisture = CalcNoise(settings.MoistureFrequency, settings.MoistureSeed.GetHashCode());
+		var heat = CalcNoise(settings.TemperatureFrequency, settings.TemperatureSeed.GetHashCode());
 
 		var biomes = new Dictionary<BiomeType, Biome>
 		{
@@ -68,11 +79,11 @@ public partial class World : TileMap
 			{ BiomeType.Savanna,             new BiomeSavanna(this)             }
 		};
 
-		for (int x = 0; x < Size; x++)
-			for (int z = 0; z < Size; z++)
+		for (int x = 0; x < settings.ChunkSize; x++)
+			for (int z = 0; z < settings.ChunkSize; z++)
 			{
-				var moistureValue = moisture[x, z] + MoistureOffset;
-				var heatValue = heat[x, z] + HeatOffset;
+				var moistureValue = moisture[x, z] + settings.MoistureOffset;
+				var heatValue = heat[x, z] + settings.TemperatureOffset;
 
 				// Generate the tiles
 				var biome = GetBiome(moistureValue, heatValue);
@@ -110,9 +121,9 @@ public partial class World : TileMap
 		if (seed != 0)
 			Noise.Seed = seed;
 
-		return Noise.Calc2D(Size, Size, frequency);
+		return Noise.Calc2D(WorldSettings.ChunkSize, WorldSettings.ChunkSize, frequency);
 	}
 
 	public void SetTile(int worldX, int worldZ, int tileX = 0, int tileY = 0) =>
-		SetCell(0, new Vector2i(-Size / 2, -Size / 2) + new Vector2i(worldX, worldZ), 0, new Vector2i(tileX, tileY));
+		SetCell(0, new Vector2i(-WorldSettings.ChunkSize / 2, -WorldSettings.ChunkSize / 2) + new Vector2i(worldX, worldZ), 0, new Vector2i(tileX, tileY));
 }

@@ -51,6 +51,14 @@ grow_horizontal = 0
 grow_vertical = 0
 script = ExtResource("4_pbrw8")
 NodePathWorld = NodePath("../../TileMap")
+NodePathMoistureIntensity = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Offset/MoistureOffset")
+NodePathMoistureFrequency = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Frequency/MoistureFrequency")
+NodePathMoistureSeed = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Seed/MoistureSeed")
+NodePathTemperatureIntensity = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Offset/Temperature")
+NodePathTemperatureFrequency = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency/TemperatureFrequency")
+NodePathTemperatureSeed = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Seed/TemperatureSeed")
+NodePathUpdateOnEdit = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBox/UpdateOnEdit")
+NodePathChunkSize = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ChunkSize")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings"]
 layout_mode = 2
@@ -62,46 +70,175 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer"]
 layout_mode = 2
 
-[node name="Moisture" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+[node name="Moisture" type="PanelContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/HBoxContainer"]
-custom_minimum_size = Vector2(120, 0)
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox"]
 layout_mode = 2
 text = "Moisture"
+horizontal_alignment = 1
 
-[node name="Moisture" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+[node name="Offset" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox"]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Offset"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Intensity"
+
+[node name="MoistureOffset" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Offset"]
+layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
 min_value = -200.0
 max_value = 200.0
 
-[node name="Temperature" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+[node name="Frequency" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature"]
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Frequency"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Frequency
+"
+
+[node name="MoistureFrequency" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Frequency"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 0.05
+step = 0.001
+value = 0.005
+
+[node name="Seed" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/HBoxContainer"]
-custom_minimum_size = Vector2(120, 0)
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Seed"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Seed"
+
+[node name="MoistureSeed" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Seed"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Temperature" type="PanelContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox"]
 layout_mode = 2
 text = "Temperature"
+horizontal_alignment = 1
 
-[node name="Temperature" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+[node name="Offset" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox"]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Offset"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Intensity"
+
+[node name="Temperature" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Offset"]
+layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 1
 min_value = -200.0
 max_value = 200.0
+
+[node name="Frequency" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Frequency
+"
+
+[node name="TemperatureFrequency" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 0.05
+step = 0.001
+value = 0.005
+
+[node name="Seed" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Seed"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Seed"
+
+[node name="TemperatureSeed" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Seed"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="HBox" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBox"]
+layout_mode = 2
+text = "Update On Edit"
+
+[node name="UpdateOnEdit" type="CheckBox" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBox"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Chunk Size"
+
+[node name="ChunkSize" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "300"
+alignment = 1
 
 [node name="Generate" type="Button" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Generate"
 
-[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/HBoxContainer/Moisture" to="CanvasLayer/UIWorldSettings" method="_on_moisture_value_changed"]
-[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/HBoxContainer/Temperature" to="CanvasLayer/UIWorldSettings" method="_on_temperature_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Offset/MoistureOffset" to="CanvasLayer/UIWorldSettings" method="_on_moisture_offset_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Frequency/MoistureFrequency" to="CanvasLayer/UIWorldSettings" method="_on_moisture_frequency_value_changed"]
+[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Seed/MoistureSeed" to="CanvasLayer/UIWorldSettings" method="_on_moisture_seed_text_changed"]
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Offset/Temperature" to="CanvasLayer/UIWorldSettings" method="_on_temperature_offset_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency/TemperatureFrequency" to="CanvasLayer/UIWorldSettings" method="_on_temperature_frequency_value_changed"]
+[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Seed/TemperatureSeed" to="CanvasLayer/UIWorldSettings" method="_on_temperature_seed_text_changed"]
+[connection signal="toggled" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBox/UpdateOnEdit" to="CanvasLayer/UIWorldSettings" method="_on_update_on_edit_toggled"]
+[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ChunkSize" to="CanvasLayer/UIWorldSettings" method="_on_chunk_size_text_changed"]
 [connection signal="pressed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Generate" to="CanvasLayer/UIWorldSettings" method="_on_generate_pressed"]
