@@ -26,6 +26,9 @@ public partial class World : TileMap
 		var noiseAmplitude = CalcNoise(SeedTiles, FrequencyForAmplitude);
 		var noiseBiome = CalcNoise(SeedBiomes, FrequencyForBiome);
 
+		var biomeTropicalRainForest = new BiomeTropicalRainForest(this);
+		var biomeOcean = new BiomeOcean(this);
+
 		for (int x = 0; x < Size; x++)
 			for (int z = 0; z < Size; z++)
 			{
@@ -35,19 +38,12 @@ public partial class World : TileMap
 				if (biome == Biome.TropicalRainForest)
 				{
 					// Biome 1
-
-					if (amplitude < 50)
-						SetTile(x, z);
-					else if (amplitude is >= 50 and <= 200)
-						SetTile(x, z, 1);
-					else
-						SetTile(x, z, 3);
+					biomeTropicalRainForest.Generate(x, z, amplitude);
 				}
 				else if (biome == Biome.Ocean)
 				{
 					// Biome 2
-
-					SetTile(x, z, 3);
+					biomeOcean.Generate(x, z, amplitude);
 				}
 			}
 	}
@@ -72,6 +68,6 @@ public partial class World : TileMap
 		return Noise.Calc2D(Size, Size, frequency);
 	}
 
-	private void SetTile(int worldX, int worldZ, int tileX = 0, int tileY = 0) =>
+	public void SetTile(int worldX, int worldZ, int tileX = 0, int tileY = 0) =>
 		SetCell(0, new Vector2i(-Size / 2, -Size / 2) + new Vector2i(worldX, worldZ), 0, new Vector2i(tileX, tileY));
 }
