@@ -16,26 +16,46 @@ namespace Project2D;
 public partial class World : TileMap
 {
 	private int Size { get; set; } = 100;
-	private int Seed { get; set; } = 209323094;
-	private float Frequency { get; set; } = 0.02f;
+	private int SeedTiles { get; set; } = 209323094;
+	private int SeedBiomes { get; set; } = 309333032;
+	private float FrequencyForAmplitude { get; set; } = 0.02f;
+	private float FrequencyForBiome { get; set; } = 0.01f;
 
 	public override void _Ready()
 	{
-		Noise.Seed = Seed;
-		var noise = Noise.Calc2D(Size, Size, Frequency);
+		var noiseAmplitude = CalcNoise(SeedTiles, FrequencyForAmplitude);
+		var noiseBiome = CalcNoise(SeedBiomes, FrequencyForBiome);
 
 		for (int x = 0; x < Size; x++)
 			for (int z = 0; z < Size; z++)
 			{
-				var amplitude = noise[x, z];
+				var amplitude = noiseAmplitude[x, z];
+				var biome = noiseBiome[x, z];
 
-				if (amplitude < 50)
-					SetTile(x, z);
-				else if (amplitude is >= 50 and <= 200)
-					SetTile(x, z, 1);
+				if (biome > 100)
+				{
+					// Biome 1
+
+					if (amplitude < 50)
+						SetTile(x, z);
+					else if (amplitude is >= 50 and <= 200)
+						SetTile(x, z, 1);
+					else
+						SetTile(x, z, 3);
+				}
 				else
-					SetTile(x, z, 3);
+				{
+					// Biome 2
+
+					SetTile(x, z);
+				}
 			}
+	}
+
+	private float[,] CalcNoise(int seed, float frequency)
+	{
+		Noise.Seed = seed;
+		return Noise.Calc2D(Size, Size, frequency);
 	}
 
 	private void SetTile(int worldX, int worldZ, int tileX = 0, int tileY = 0) =>
