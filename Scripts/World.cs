@@ -8,7 +8,6 @@ global using System.Threading;
 global using System.Text.RegularExpressions;
 global using System.Threading.Tasks;
 global using System.Linq;
-
 namespace Project2D;
 
 public enum BiomeType
@@ -56,10 +55,63 @@ public partial class World : TileMap
 				SetCell(0, new Vector2i(-PrevChunkSize / 2, -PrevChunkSize / 2) + new Vector2i(x, z));
 	}
 
+	public void GenerateSquare(Vector2 position)
+	{
+		var vertex_array = new Vector3[4];
+		var normal_array = new Vector3[4];
+		var uv_array     = new Vector2[4];
+		var index_array  = new int[6];
+
+		var s = 32; // hard coded size
+		var o = new Vector3(s, s, 0); // hard coded offset
+		var posVec3 = new Vector3(position.x * s * 2, position.y * s * 2, 0);
+
+		for (int i = 0; i < 2; i++)
+		{
+			vertex_array[0] = new Vector3(-s, -s, 0) + o + posVec3;
+			normal_array[0] = new Vector3( 0, 0,  s) + o + posVec3;
+			uv_array    [0] = new Vector2( 0, 0    );
+																	   
+			vertex_array[1] = new Vector3(-s, s, 0 ) + o + posVec3;
+			normal_array[1] = new Vector3( 0, 0, s ) + o + posVec3;
+			uv_array    [1] = new Vector2( 0, s    );
+
+			vertex_array[2] = new Vector3( s, s, 0 ) + o + posVec3;
+			normal_array[2] = new Vector3( 0, 0, s ) + o + posVec3;
+			uv_array    [2] = new Vector2( s, s    );	
+
+			vertex_array[3] = new Vector3( s, -s, 0) + o + posVec3;
+			normal_array[3] = new Vector3( 0, 0, s ) + o + posVec3;
+			uv_array    [3] = new Vector2( s, 0    );
+
+			index_array[0] = 0;
+			index_array[1] = 1;
+			index_array[2] = 2;
+
+			index_array[3] = 2;
+			index_array[4] = 3;
+			index_array[5] = 0;
+		}
+
+		var arrays = new Godot.Collections.Array();
+		arrays.Resize((int)Mesh.ArrayType.Max);
+		arrays[(int)Mesh.ArrayType.Vertex] = vertex_array;
+		arrays[(int)Mesh.ArrayType.Normal] = normal_array;
+		arrays[(int)Mesh.ArrayType.TexUv] = uv_array;
+		arrays[(int)Mesh.ArrayType.Index] = index_array;
+
+		var mesh = new ArrayMesh();
+		mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
+
+		var meshInstance = new MeshInstance2D { Mesh = mesh };
+		AddChild(meshInstance);
+	}
+
 	public void Generate(WorldSettings settings)
 	{
+		GenerateSquare(new Vector2(-1, -1));
+		return;
 		DeleteWorld();
-
 		PrevChunkSize = WorldSettings.ChunkSize;
 		WorldSettings = settings;
 
