@@ -4,12 +4,13 @@ public partial class UIWorldSettings : Node
 {
 	[Export] public NodePath NodePathWorld { get; set; }
 
-	[Export] public NodePath NodePathMoistureIntensity { get; set; }
+	[Export] public NodePath NodePathMoistureWet { get; set; }
+	[Export] public NodePath NodePathMoistureDry { get; set; }
 	[Export] public NodePath NodePathMoistureFrequency { get; set; }
-	[Export] public NodePath NodePathMoistureSeed { get; set; }
-	[Export] public NodePath NodePathTemperatureIntensity { get; set; }
+	[Export] public NodePath NodePathSeed { get; set; }
+	[Export] public NodePath NodePathTemperatureHot { get; set; }
+	[Export] public NodePath NodePathTemperatureCold { get; set; }
 	[Export] public NodePath NodePathTemperatureFrequency { get; set; }
-	[Export] public NodePath NodePathTemperatureSeed { get; set; }
 	[Export] public NodePath NodePathUpdateOnEdit { get; set; }
 	[Export] public NodePath NodePathChunkSize { get; set; }
 
@@ -22,22 +23,29 @@ public partial class UIWorldSettings : Node
 		World = GetNode<World>(NodePathWorld);
 
 		// Set values from what is set in the UI
-		WorldSettings.MoistureIntensity = (float)GetNode<Slider>(NodePathMoistureIntensity).Value;
+		WorldSettings.MoistureWetness = (float)GetNode<Slider>(NodePathMoistureWet).Value;
+		WorldSettings.MoistureDryness = (float)GetNode<Slider>(NodePathMoistureDry).Value;
 		WorldSettings.MoistureFrequency = (float)GetNode<Slider>(NodePathMoistureFrequency).Value;
-		WorldSettings.MoistureSeed = GetNode<LineEdit>(NodePathMoistureSeed).Text;
-		WorldSettings.TemperatureIntensity = (float)GetNode<Slider>(NodePathTemperatureIntensity).Value;
+		WorldSettings.TemperatureHot = (float)GetNode<Slider>(NodePathTemperatureHot).Value;
+		WorldSettings.TemperatureCold = (float)GetNode<Slider>(NodePathTemperatureCold).Value;
 		WorldSettings.TemperatureFrequency = (float)GetNode<Slider>(NodePathTemperatureFrequency).Value;
-		WorldSettings.TemperatureSeed = GetNode<LineEdit>(NodePathTemperatureSeed).Text;
 		UpdateOnEdit = GetNode<CheckBox>(NodePathUpdateOnEdit).ButtonPressed;
 		WorldSettings.ChunkSize = int.Parse(GetNode<LineEdit>(NodePathChunkSize).Text);
+		WorldSettings.Seed = GetNode<LineEdit>(NodePathSeed).Text;
 
 		// Immediately generate the world
 		World.Generate(WorldSettings);
 	}
 
-	private void _on_moisture_offset_value_changed(float v)
+	private void _on_moisture_wetness_value_changed(float v)
 	{
-		WorldSettings.MoistureIntensity = v;
+		WorldSettings.MoistureWetness = v;
+		UpdateWorldOnEdit();
+	}
+
+	private void _on_moisture_dryness_value_changed(float v)
+	{
+		WorldSettings.MoistureDryness = v;
 		UpdateWorldOnEdit();
 	}
 
@@ -47,15 +55,15 @@ public partial class UIWorldSettings : Node
 		UpdateWorldOnEdit();
 	}
 
-	private void _on_moisture_seed_text_changed(string v)
+	private void _on_temperature_hot_value_changed(float v)
 	{
-		WorldSettings.MoistureSeed = v;
+		WorldSettings.TemperatureHot = v;
 		UpdateWorldOnEdit();
 	}
 
-	private void _on_temperature_offset_value_changed(float v)
+	private void _on_temperature_cold_value_changed(float v)
 	{
-		WorldSettings.TemperatureIntensity = v;
+		WorldSettings.TemperatureCold = v;
 		UpdateWorldOnEdit();
 	}
 
@@ -65,9 +73,9 @@ public partial class UIWorldSettings : Node
 		UpdateWorldOnEdit();
 	}
 
-	private void _on_temperature_seed_text_changed(string v)
+	private void _on_seed_text_changed(string v)
 	{
-		WorldSettings.TemperatureSeed = v;
+		WorldSettings.Seed = v;
 		UpdateWorldOnEdit();
 	}
 
@@ -93,10 +101,11 @@ public partial class UIWorldSettings : Node
 public class WorldSettings
 {
 	public int ChunkSize { get; set; }
-	public float MoistureIntensity { get; set; }
+	public float MoistureWetness { get; set; }
+	public float MoistureDryness { get; set; }
 	public float MoistureFrequency { get; set; }
-	public string MoistureSeed { get; set; }
-	public float TemperatureIntensity { get; set; }
+	public float TemperatureHot { get; set; }
+	public float TemperatureCold { get; set; }
 	public float TemperatureFrequency { get; set; }
-	public string TemperatureSeed { get; set; }
+	public string Seed { get; set; }
 }

@@ -64,10 +64,10 @@ public partial class World : TileMap
 		WorldSettings = settings;
 
 		MoistureNoise.Frequency = settings.MoistureFrequency;
-		MoistureNoise.Seed = settings.MoistureSeed.GetHashCode();
+		MoistureNoise.Seed = settings.Seed.GetHashCode();
 
 		HeatNoise.Frequency = settings.TemperatureFrequency;
-		HeatNoise.Seed = settings.TemperatureSeed.GetHashCode();
+		HeatNoise.Seed = settings.Seed.GetHashCode();
 
 		var biomes = new Dictionary<BiomeType, Biome>
 		{
@@ -86,8 +86,21 @@ public partial class World : TileMap
 		for (int x = 0; x < settings.ChunkSize; x++)
 			for (int z = 0; z < settings.ChunkSize; z++)
 			{
-				var moistureValue = Mathf.Clamp(MoistureNoise.GetNoise2d(x, z) + 1 + settings.MoistureIntensity   , 0, 1);
-				var heatValue     = Mathf.Clamp(    HeatNoise.GetNoise2d(x, z) + 1 + settings.TemperatureIntensity, 0, 1);
+				var moistureValue = Mathf.Clamp
+					(
+						MoistureNoise.GetNoise2d(x, z) + 1 
+							+ settings.MoistureWetness 
+							- settings.MoistureDryness
+							, 0, 1
+					);
+
+				var heatValue = Mathf.Clamp
+					(
+						HeatNoise.GetNoise2d(x, z) + 1 
+							+ settings.TemperatureHot  
+							- settings.TemperatureCold
+							, 0, 1
+					);
 
 				// Generate the tiles
 				var biome = GetBiome(moistureValue, heatValue);
