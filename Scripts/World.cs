@@ -57,40 +57,47 @@ public partial class World : TileMap
 
 	public void GenerateSquare(Vector2 position)
 	{
-		var vertex_array = new Vector3[4];
-		var normal_array = new Vector3[4];
-		var uv_array     = new Vector2[4];
-		var index_array  = new int[6];
+		var vertex_array = new Vector3[4 * 2];
+		var normal_array = new Vector3[4 * 2];
+		var uv_array     = new Vector2[4 * 2];
+		var index_array  = new int[6 * 2];
 
 		var s = 32; // hard coded size
 		var o = new Vector3(s, s, 0); // hard coded offset
 		var posVec3 = new Vector3(position.x * s * 2, position.y * s * 2, 0);
 
-		for (int i = 0; i < 2; i++)
+		var i = 0;
+		var v = 0;
+
+		for (int n = 0; n < 2; n++)
 		{
-			vertex_array[0] = new Vector3(-s, -s, 0) + o + posVec3;
-			normal_array[0] = new Vector3( 0, 0,  s) + o + posVec3;
-			uv_array    [0] = new Vector2( 0, 0    );
+			vertex_array[v] = new Vector3(-s, -s, 0) + o + posVec3;
+			normal_array[v] = new Vector3( 0, 0,  s) + o + posVec3;
+			uv_array    [v] = new Vector2( 0, 0    );
 																	   
-			vertex_array[1] = new Vector3(-s, s, 0 ) + o + posVec3;
-			normal_array[1] = new Vector3( 0, 0, s ) + o + posVec3;
-			uv_array    [1] = new Vector2( 0, s    );
+			vertex_array[v + 1] = new Vector3(-s, s, 0 ) + o + posVec3;
+			normal_array[v + 1] = new Vector3( 0, 0, s ) + o + posVec3;
+			uv_array    [v + 1] = new Vector2( 0, s    );
 
-			vertex_array[2] = new Vector3( s, s, 0 ) + o + posVec3;
-			normal_array[2] = new Vector3( 0, 0, s ) + o + posVec3;
-			uv_array    [2] = new Vector2( s, s    );	
+			vertex_array[v + 2] = new Vector3( s, s, 0 ) + o + posVec3;
+			normal_array[v + 2] = new Vector3( 0, 0, s ) + o + posVec3;
+			uv_array    [v + 2] = new Vector2( s, s    );	
 
-			vertex_array[3] = new Vector3( s, -s, 0) + o + posVec3;
-			normal_array[3] = new Vector3( 0, 0, s ) + o + posVec3;
-			uv_array    [3] = new Vector2( s, 0    );
+			vertex_array[v + 3] = new Vector3( s, -s, 0) + o + posVec3;
+			normal_array[v + 3] = new Vector3( 0, 0, s ) + o + posVec3;
+			uv_array    [v + 3] = new Vector2( s, 0    );
 
-			index_array[0] = 0;
-			index_array[1] = 1;
-			index_array[2] = 2;
+			index_array[i]     = i;
+			index_array[i + 1] = i + 1;
+			index_array[i + 2] = i + 2;
 
-			index_array[3] = 2;
-			index_array[4] = 3;
-			index_array[5] = 0;
+			index_array[i + 3] = i + 2;
+			index_array[i + 4] = i + 3;
+			index_array[i + 5] = i + 0;
+
+			v += 4;
+			i += 6;
+			posVec3 += new Vector3(s * 2, 0, 0);
 		}
 
 		var arrays = new Godot.Collections.Array();
