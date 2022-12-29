@@ -161,7 +161,11 @@ public partial class World : TileMap
 		DeleteWorld();
 		PrevChunkSize = WorldSettings.ChunkSize;
 		WorldSettings = settings;
+		GeneratePlane(new Vector2(0, 0), settings.ChunkSize, GenerateBiomeData(settings));
+	}
 
+	private BiomeType[,] GenerateBiomeData(WorldSettings settings)
+	{
 		MoistureNoise.Frequency = settings.MoistureFrequency;
 		MoistureNoise.Seed = settings.Seed.GetHashCode();
 
@@ -192,7 +196,6 @@ public partial class World : TileMap
 				// Generate the tiles
 				var biome = GetBiome(moistureValue, heatValue);
 				biomeData[x, z] = biome;
-				//biomes[biome].Generate(x, z);
 
 				// Store information about each tile
 				var tile = new Tile();
@@ -203,7 +206,7 @@ public partial class World : TileMap
 				Tiles[new Vector2(x, z)] = tile;
 			}
 
-		GeneratePlane(new Vector2(0, 0), settings.ChunkSize, biomeData);
+		return biomeData;
 	}
 
 	private BiomeType GetBiome(float moistureNoise, float heatNoise)
@@ -213,7 +216,4 @@ public partial class World : TileMap
 
 		return BiomeTable[(int)moistureType, (int)heatType];
 	}
-
-	public void SetTile(int worldX, int worldZ, int tileX = 0, int tileY = 0) =>
-		SetCell(0, new Vector2i(-WorldSettings.ChunkSize / 2, -WorldSettings.ChunkSize / 2) + new Vector2i(worldX, worldZ), 0, new Vector2i(tileX, tileY));
 }
