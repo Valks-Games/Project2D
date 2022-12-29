@@ -1,5 +1,12 @@
 namespace Project2D;
 
+public class SliderSettings
+{
+	public string Name;
+	public double MaxValue;
+	public double Step;
+}
+
 public partial class UIWorldSettings : Node
 {
 	[Export] public NodePath NodePathWorld { get; set; }
@@ -17,6 +24,8 @@ public partial class UIWorldSettings : Node
 	[Export] public NodePath NodePathChunkSize { get; set; }
 	[Export] public NodePath NodePathSpawnSize { get; set; }
 
+	[Export] public NodePath NodePathVBox { get; set; }
+
 	private World World { get; set; }
 	private bool UpdateOnEdit { get; set; }
 	private WorldSettings WorldSettings { get; set; } = new();
@@ -24,6 +33,25 @@ public partial class UIWorldSettings : Node
 	public override void _Ready()
 	{
 		World = GetNode<World>(NodePathWorld);
+
+		/*var parent = GetNode<VBoxContainer>(NodePathVBox);
+
+		var settings = CreateSettingsSection("Moisture", 
+				new SliderSettings
+				{
+					Name = "Dry",
+					MaxValue = 1,
+					Step = 0.01
+				},
+				new SliderSettings
+				{
+					Name = "Wet",
+					MaxValue = 1,
+					Step = 0.01
+				}
+			);
+
+		parent.AddChild(settings);*/
 
 		// Set values from what is set in the UI
 		WorldSettings.MoistureWetness = (float)GetNode<Slider>(NodePathMoistureWet).Value;
@@ -41,6 +69,50 @@ public partial class UIWorldSettings : Node
 
 		// Immediately generate the world
 		World.Generate(WorldSettings);
+	}
+
+	private PanelContainer CreateSettingsSection(string name, params SliderSettings[] sliders)
+	{
+		var panelContainer = new PanelContainer();
+		var marginContainer = new MarginContainer();
+		var vbox = new VBoxContainer();
+		var label = new Label();
+
+		label.Text = "Moisture";
+		label.HorizontalAlignment = HorizontalAlignment.Center;
+		marginContainer.AddThemeConstantOverride("margin_left", 5);
+		marginContainer.AddThemeConstantOverride("margin_right", 5);
+		marginContainer.AddThemeConstantOverride("margin_top", 5);
+		marginContainer.AddThemeConstantOverride("margin_bottom", 5);
+
+		panelContainer.AddChild(marginContainer);
+		marginContainer.AddChild(vbox);
+
+		vbox.AddChild(label);
+		foreach (var slider in sliders)
+			vbox.AddChild(CreateSlider(slider));
+
+		return panelContainer;
+	}
+
+	private HBoxContainer CreateSlider(SliderSettings settings)
+	{
+		var hbox = new HBoxContainer();
+		var label = new Label();
+		var slider = new HSlider();
+
+		label.Text = settings.Name;
+		label.CustomMinimumSize = new Vector2(90, 0);
+		slider.MaxValue = settings.MaxValue;
+		slider.Step = settings.Step;
+		slider.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
+		slider.SizeFlagsVertical = (int)Control.SizeFlags.Fill;
+		slider.ValueChanged += v => WorldSettings.Values[settings.Name] = (float)v;
+
+		hbox.AddChild(label);
+		hbox.AddChild(slider);
+
+		return hbox;
 	}
 
 	private void _on_spawn_size_text_changed(string v)
@@ -127,6 +199,7 @@ public partial class UIWorldSettings : Node
 
 public class WorldSettings
 {
+	public Dictionary<string, float> Values { get; set; } = new();
 	public int ChunkSize { get; set; }
 	public int SpawnSize { get; set; }
 	public float MoistureWetness { get; set; }

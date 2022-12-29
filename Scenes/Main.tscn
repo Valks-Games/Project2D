@@ -55,14 +55,15 @@ NodePathMoistureWet = NodePath("MarginContainer/VBoxContainer/Moisture/MarginCon
 NodePathMoistureDry = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Dryness/MoistureDryness")
 NodePathMoistureFrequency = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Frequency/MoistureFrequency")
 NodePathMoistureStrength = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Strength/MoistureStrength")
-NodePathSeed = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Seed/Seed")
+NodePathSeed = NodePath("MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Seed/Seed")
 NodePathTemperatureHot = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Hot/Temperature")
 NodePathTemperatureCold = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Cold/TemperatureCold")
 NodePathTemperatureFrequency = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency/TemperatureFrequency")
 NodePathTemperatureStrength = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Strength/TemperatureStrength")
-NodePathUpdateOnEdit = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Update On Edit/UpdateOnEdit")
-NodePathChunkSize = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Chunk Size/ChunkSize")
-NodePathSpawnSize = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Spawn Size/SpawnSize")
+NodePathUpdateOnEdit = NodePath("MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Update On Edit/UpdateOnEdit")
+NodePathChunkSize = NodePath("MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Chunk Size/ChunkSize")
+NodePathSpawnSize = NodePath("MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Spawn Size/SpawnSize")
+NodePathVBox = NodePath("MarginContainer/VBoxContainer")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings"]
 layout_mode = 2
@@ -236,61 +237,61 @@ max_value = 2.0
 step = 0.001
 value = 1.0
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
+[node name="General" type="PanelContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer"]
 layout_mode = 2
 
-[node name="Seed" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Seed" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Seed"]
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Seed"]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "Seed"
 
-[node name="Seed" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Seed"]
+[node name="Seed" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Seed"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Update On Edit" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Update On Edit" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Update On Edit"]
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Update On Edit"]
 layout_mode = 2
 text = "Update On Edit"
 
-[node name="UpdateOnEdit" type="CheckBox" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Update On Edit"]
+[node name="UpdateOnEdit" type="CheckBox" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Update On Edit"]
 layout_mode = 2
 
-[node name="Chunk Size" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Chunk Size" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Chunk Size"]
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Chunk Size"]
 layout_mode = 2
 text = "Chunk Size"
 
-[node name="ChunkSize" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Chunk Size"]
+[node name="ChunkSize" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Chunk Size"]
 layout_mode = 2
 text = "100"
 alignment = 1
 
-[node name="Spawn Size" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Spawn Size" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Spawn Size"]
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Spawn Size"]
 layout_mode = 2
 text = "Spawn Size"
 
-[node name="SpawnSize" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Spawn Size"]
+[node name="SpawnSize" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Spawn Size"]
 layout_mode = 2
 text = "1"
 alignment = 1
@@ -307,8 +308,8 @@ text = "Generate"
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Cold/TemperatureCold" to="CanvasLayer/UIWorldSettings" method="_on_temperature_cold_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency/TemperatureFrequency" to="CanvasLayer/UIWorldSettings" method="_on_temperature_frequency_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Strength/TemperatureStrength" to="CanvasLayer/UIWorldSettings" method="_on_temperature_strength_value_changed"]
-[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Seed/Seed" to="CanvasLayer/UIWorldSettings" method="_on_seed_text_changed"]
-[connection signal="toggled" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Update On Edit/UpdateOnEdit" to="CanvasLayer/UIWorldSettings" method="_on_update_on_edit_toggled"]
-[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Chunk Size/ChunkSize" to="CanvasLayer/UIWorldSettings" method="_on_chunk_size_text_changed"]
-[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Spawn Size/SpawnSize" to="CanvasLayer/UIWorldSettings" method="_on_spawn_size_text_changed"]
+[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Seed/Seed" to="CanvasLayer/UIWorldSettings" method="_on_seed_text_changed"]
+[connection signal="toggled" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Update On Edit/UpdateOnEdit" to="CanvasLayer/UIWorldSettings" method="_on_update_on_edit_toggled"]
+[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Chunk Size/ChunkSize" to="CanvasLayer/UIWorldSettings" method="_on_chunk_size_text_changed"]
+[connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/General/MarginContainer/VBoxContainer/Spawn Size/SpawnSize" to="CanvasLayer/UIWorldSettings" method="_on_spawn_size_text_changed"]
 [connection signal="pressed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Generate" to="CanvasLayer/UIWorldSettings" method="_on_generate_pressed"]
