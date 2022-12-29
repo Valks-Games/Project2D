@@ -9,8 +9,8 @@ public class BiomeGrassland : Biome
 		World = world;
 	}
 
-	public override void Generate(int x, int z)
+	public override void Generate(Color[] colors, int v)
 	{
-		World.SetTile(x, z, 4);
+		World.ColorSquare(colors, v, new Color("#A6E147"));
 	}
 }

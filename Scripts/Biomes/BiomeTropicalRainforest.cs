@@ -11,17 +11,22 @@ public class BiomeTropicalRainForest : Biome
 		//Noise = World.CalcNoise(0.02f);
 	}
 
-	public override void Generate(int x, int z)
+	public override void Generate(Color[] colors, int v)
 	{
-		/*var noiseValue = Noise[x, z];
+		World.ColorSquare(colors, v, new Color("#427B00"));
+	}
+
+	/*public override void Generate(int x, int z)
+	{
+		var noiseValue = Noise[x, z];
 
 		if (noiseValue < 50)
 			World.SetTile(x, z, 4);
 		else if (noiseValue is >= 50 and <= 200)
 			World.SetTile(x, z, 5);
 		else
-			World.SetTile(x, z, 6);*/
+			World.SetTile(x, z, 6);
 
 		World.SetTile(x, z, 4);
-	}
+	}*/
 }

@@ -9,8 +9,8 @@ public class BiomeSeasonalForest : Biome
 		World = world;
 	}
 
-	public override void Generate(int x, int z)
+	public override void Generate(Color[] colors, int v)
 	{
-		World.SetTile(x, z, 7);
+		World.ColorSquare(colors, v, new Color("#4C6415"));
 	}
 }

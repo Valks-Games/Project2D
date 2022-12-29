@@ -9,8 +9,8 @@ public class BiomeSavanna : Biome
 		World = world;
 	}
 
-	public override void Generate(int x, int z)
+	public override void Generate(Color[] colors, int v)
 	{
-		World.SetTile(x, z, 1, 1);
+		World.ColorSquare(colors, v, new Color("#B2D15B"));
 	}
 }

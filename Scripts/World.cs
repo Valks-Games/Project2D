@@ -37,6 +37,8 @@ public partial class World : TileMap
 		// not ideal, but this is how it has to be for now
 	};
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
+
+	private Dictionary<BiomeType, Biome> Biomes { get; set; }
 	private BiomeType[,] BiomeTable { get; set; } = new BiomeType[6, 6]
 	{
 		// COLDEST              COLDER           COLD                      HOT                           HOTTER                       HOTTEST
@@ -49,6 +51,23 @@ public partial class World : TileMap
 	};
 	public int PrevChunkSize { get; set; }
 
+	public override void _Ready()
+	{
+		Biomes = new Dictionary<BiomeType, Biome>
+		{
+			{ BiomeType.Tundra,              new BiomeTundra(this)              },
+			{ BiomeType.Ice,                 new BiomeIce(this)                 },
+			{ BiomeType.Grassland,           new BiomeGrassland(this)           },
+			{ BiomeType.Woodland,            new BiomeWoodland(this)            },
+			{ BiomeType.BorealForest,        new BiomeBorealForest(this)        },
+			{ BiomeType.SeasonalForest,      new BiomeSeasonalForest(this)      },
+			{ BiomeType.TemperateRainforest, new BiomeTemperateRainforest(this) },
+			{ BiomeType.TropicalRainforest,  new BiomeTropicalRainForest(this)  },
+			{ BiomeType.Desert,              new BiomeDesert(this)              },
+			{ BiomeType.Savanna,             new BiomeSavanna(this)             }
+		};
+	}
+
 	public void DeleteWorld()
 	{
 		for (int x = 0; x < PrevChunkSize; x++)
@@ -56,11 +75,20 @@ public partial class World : TileMap
 				SetCell(0, new Vector2i(-PrevChunkSize / 2, -PrevChunkSize / 2) + new Vector2i(x, z));
 	}
 
-	public void GeneratePlane(Vector2 position, int size)
+	public void ColorSquare(Color[] colors, int v, Color color)
+	{
+		colors    [v] = color;
+		colors[v + 1] = color;
+		colors[v + 2] = color;
+		colors[v + 3] = color;
+	}
+
+	public void GeneratePlane(Vector2 position, int size, BiomeType[,] biomeData)
 	{
 		var vertices = new Vector3[4 * size * size];
 		var normals  = new Vector3[4 * size * size];
 		var uvs      = new Vector2[4 * size * size];
+		var colors   = new   Color[4 * size * size];
 		var indices  = new     int[6 * size * size];
 
 		var s = 32; // hard coded size
@@ -72,10 +100,12 @@ public partial class World : TileMap
 		var i = 0;
 		var v = 0;
 
-		for (int y = 0; y < size; y++)
+		for (int z = 0; z < size; z++)
 		{
 			for (int x = 0; x < size; x++)
 			{
+				Biomes[biomeData[x, z]].Generate(colors, v);
+
 				vertices    [v] = new Vector3(-s, -s, 0) + posVec3;
 				normals     [v] = new Vector3( 0, 0,  s);
 				uvs         [v] = new Vector2( 0, 0    );
@@ -116,6 +146,7 @@ public partial class World : TileMap
 		arrays[(int)Mesh.ArrayType.Vertex] = vertices;
 		arrays[(int)Mesh.ArrayType.Normal] = normals;
 		arrays[(int)Mesh.ArrayType.TexUv] = uvs;
+		arrays[(int)Mesh.ArrayType.Color] = colors;
 		arrays[(int)Mesh.ArrayType.Index] = indices;
 
 		var mesh = new ArrayMesh();
@@ -127,8 +158,6 @@ public partial class World : TileMap
 
 	public void Generate(WorldSettings settings)
 	{
-		GeneratePlane(new Vector2(0, 0), 5);
-		return;
 		DeleteWorld();
 		PrevChunkSize = WorldSettings.ChunkSize;
 		WorldSettings = settings;
@@ -139,19 +168,7 @@ public partial class World : TileMap
 		HeatNoise.Frequency = settings.TemperatureFrequency;
 		HeatNoise.Seed = settings.Seed.GetHashCode();
 
-		var biomes = new Dictionary<BiomeType, Biome>
-		{
-			{ BiomeType.Tundra,              new BiomeTundra(this)              },
-			{ BiomeType.Ice,                 new BiomeIce(this)                 },
-			{ BiomeType.Grassland,           new BiomeGrassland(this)           },
-			{ BiomeType.Woodland,            new BiomeWoodland(this)            },
-			{ BiomeType.BorealForest,        new BiomeBorealForest(this)        },
-			{ BiomeType.SeasonalForest,      new BiomeSeasonalForest(this)      },
-			{ BiomeType.TemperateRainforest, new BiomeTemperateRainforest(this) },
-			{ BiomeType.TropicalRainforest,  new BiomeTropicalRainForest(this)  },
-			{ BiomeType.Desert,              new BiomeDesert(this)              },
-			{ BiomeType.Savanna,             new BiomeSavanna(this)             }
-		};
+		var biomeData = new BiomeType[settings.ChunkSize, settings.ChunkSize];
 
 		for (int x = 0; x < settings.ChunkSize; x++)
 			for (int z = 0; z < settings.ChunkSize; z++)
@@ -174,7 +191,8 @@ public partial class World : TileMap
 
 				// Generate the tiles
 				var biome = GetBiome(moistureValue, heatValue);
-				biomes[biome].Generate(x, z);
+				biomeData[x, z] = biome;
+				//biomes[biome].Generate(x, z);
 
 				// Store information about each tile
 				var tile = new Tile();
@@ -184,6 +202,8 @@ public partial class World : TileMap
 
 				Tiles[new Vector2(x, z)] = tile;
 			}
+
+		GeneratePlane(new Vector2(0, 0), settings.ChunkSize, biomeData);
 	}
 
 	private BiomeType GetBiome(float moistureNoise, float heatNoise)

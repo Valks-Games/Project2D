@@ -9,8 +9,8 @@ public class BiomeTundra : Biome
 		World = world;
 	}
 
-	public override void Generate(int x, int z)
+	public override void Generate(Color[] colors, int v)
 	{
-		World.SetTile(x, z, 0);
+		World.ColorSquare(colors, v, new Color("#678071"));
 	}
 }
