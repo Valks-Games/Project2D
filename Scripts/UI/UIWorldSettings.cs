@@ -13,6 +13,7 @@ public partial class UIWorldSettings : Node
 	[Export] public NodePath NodePathTemperatureFrequency { get; set; }
 	[Export] public NodePath NodePathUpdateOnEdit { get; set; }
 	[Export] public NodePath NodePathChunkSize { get; set; }
+	[Export] public NodePath NodePathSpawnSize { get; set; }
 
 	private World World { get; set; }
 	private bool UpdateOnEdit { get; set; }
@@ -32,9 +33,19 @@ public partial class UIWorldSettings : Node
 		UpdateOnEdit = GetNode<CheckBox>(NodePathUpdateOnEdit).ButtonPressed;
 		WorldSettings.ChunkSize = int.Parse(GetNode<LineEdit>(NodePathChunkSize).Text);
 		WorldSettings.Seed = GetNode<LineEdit>(NodePathSeed).Text;
+		WorldSettings.SpawnSize = int.Parse(GetNode<LineEdit>(NodePathSpawnSize).Text);
 
 		// Immediately generate the world
 		World.Generate(WorldSettings);
+	}
+
+	private void _on_spawn_size_text_changed(string v)
+	{
+		if (!int.TryParse(v, out int num))
+			return;
+
+		WorldSettings.SpawnSize = num;
+		UpdateWorldOnEdit();
 	}
 
 	private void _on_moisture_wetness_value_changed(float v)
@@ -101,6 +112,7 @@ public partial class UIWorldSettings : Node
 public class WorldSettings
 {
 	public int ChunkSize { get; set; }
+	public int SpawnSize { get; set; }
 	public float MoistureWetness { get; set; }
 	public float MoistureDryness { get; set; }
 	public float MoistureFrequency { get; set; }

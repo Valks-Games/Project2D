@@ -67,10 +67,8 @@ public partial class World : TileMap
 		DeleteWorld();
 		WorldSettings = settings;
 
-		var worldSize = 4;
-
-		for (int x = -worldSize; x <= worldSize; x++)
-			for (int z = -worldSize; z <= worldSize; z++)
+		for (int x = -settings.SpawnSize; x <= settings.SpawnSize; x++)
+			for (int z = -settings.SpawnSize; z <= settings.SpawnSize; z++)
 				GenerateChunk(new Vector2(x, z), settings.ChunkSize, GenerateBiomeData(new Vector2(x, z), settings));
 	}
 
