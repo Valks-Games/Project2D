@@ -73,14 +73,18 @@ public partial class World : TileMap
 		DeleteWorld();
 		PrevChunkSize = WorldSettings.ChunkSize;
 		WorldSettings = settings;
-		GeneratePlane(new Vector2(0, 0), settings.ChunkSize, GenerateBiomeData(settings));
+
+		var worldSize = 1;
+
+		for (int x = -worldSize; x < worldSize * 2; x++)
+			for (int z = -worldSize; z < worldSize * 2; z++)
+				GeneratePlane(new Vector2(x, z), settings.ChunkSize, GenerateBiomeData(new Vector2(x, z), settings));
 	}
 
 	public void DeleteWorld()
 	{
-		for (int x = 0; x < PrevChunkSize; x++)
-			for (int z = 0; z < PrevChunkSize; z++)
-				SetCell(0, new Vector2i(-PrevChunkSize / 2, -PrevChunkSize / 2) + new Vector2i(x, z));
+		foreach (Node child in GetChildren())
+			child.QueueFree();
 	}
 
 	public void ColorSquare(Color[] colors, int v, Color color)
@@ -91,7 +95,7 @@ public partial class World : TileMap
 		colors[v + 3] = color;
 	}
 
-	public void GeneratePlane(Vector2 position, int size, BiomeType[,] biomeData)
+	public void GeneratePlane(Vector2 chunkCoords, int size, BiomeType[,] biomeData)
 	{
 		var vertices = new Vector3[4 * size * size];
 		var normals  = new Vector3[4 * size * size];
@@ -103,7 +107,7 @@ public partial class World : TileMap
 		var w = s * 2; // width
 		
 		// Adding s adds hardcoded offset
-		var posVec3 = new Vector3(s + position.x * w, s + position.y * w, 0);
+		var posVec3 = new Vector3(s + chunkCoords.x * w * size, s + chunkCoords.y * w * size, 0);
 
 		var i = 0;
 		var v = 0;
@@ -164,7 +168,7 @@ public partial class World : TileMap
 		AddChild(meshInstance);
 	}
 
-	private BiomeType[,] GenerateBiomeData(WorldSettings settings)
+	private BiomeType[,] GenerateBiomeData(Vector2 chunkCoords, WorldSettings settings)
 	{
 		MoistureNoise.Frequency = settings.MoistureFrequency;
 		MoistureNoise.Seed = settings.Seed.GetHashCode();
@@ -174,12 +178,14 @@ public partial class World : TileMap
 
 		var biomeData = new BiomeType[settings.ChunkSize, settings.ChunkSize];
 
+		var chunkPos = chunkCoords * settings.ChunkSize;
+
 		for (int x = 0; x < settings.ChunkSize; x++)
 			for (int z = 0; z < settings.ChunkSize; z++)
 			{
 				var moistureValue = Mathf.Clamp
 					(
-						MoistureNoise.GetNoise2d(x, z) + 1 
+						MoistureNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
 							+ settings.MoistureWetness 
 							- settings.MoistureDryness
 							, 0, 1
@@ -187,7 +193,7 @@ public partial class World : TileMap
 
 				var heatValue = Mathf.Clamp
 					(
-						HeatNoise.GetNoise2d(x, z) + 1 
+						HeatNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
 							+ settings.TemperatureHot  
 							- settings.TemperatureCold
 							, 0, 1
