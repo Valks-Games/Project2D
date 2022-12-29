@@ -68,6 +68,14 @@ public partial class World : TileMap
 		};
 	}
 
+	public void Generate(WorldSettings settings)
+	{
+		DeleteWorld();
+		PrevChunkSize = WorldSettings.ChunkSize;
+		WorldSettings = settings;
+		GeneratePlane(new Vector2(0, 0), settings.ChunkSize, GenerateBiomeData(settings));
+	}
+
 	public void DeleteWorld()
 	{
 		for (int x = 0; x < PrevChunkSize; x++)
@@ -154,14 +162,6 @@ public partial class World : TileMap
 
 		var meshInstance = new MeshInstance2D { Mesh = mesh };
 		AddChild(meshInstance);
-	}
-
-	public void Generate(WorldSettings settings)
-	{
-		DeleteWorld();
-		PrevChunkSize = WorldSettings.ChunkSize;
-		WorldSettings = settings;
-		GeneratePlane(new Vector2(0, 0), settings.ChunkSize, GenerateBiomeData(settings));
 	}
 
 	private BiomeType[,] GenerateBiomeData(WorldSettings settings)
