@@ -8,6 +8,7 @@ global using System.Threading;
 global using System.Text.RegularExpressions;
 global using System.Threading.Tasks;
 global using System.Linq;
+
 namespace Project2D;
 
 public enum BiomeType
@@ -55,57 +56,67 @@ public partial class World : TileMap
 				SetCell(0, new Vector2i(-PrevChunkSize / 2, -PrevChunkSize / 2) + new Vector2i(x, z));
 	}
 
-	public void GenerateSquare(Vector2 position)
+	public void GeneratePlane(Vector2 position, int size)
 	{
-		var vertex_array = new Vector3[4 * 2];
-		var normal_array = new Vector3[4 * 2];
-		var uv_array     = new Vector2[4 * 2];
-		var index_array  = new int[6 * 2];
+		var vertices = new Vector3[4 * size * size];
+		var normals  = new Vector3[4 * size * size];
+		var uvs      = new Vector2[4 * size * size];
+		var indices  = new     int[6 * size * size];
 
 		var s = 32; // hard coded size
-		var o = new Vector3(s, s, 0); // hard coded offset
-		var posVec3 = new Vector3(position.x * s * 2, position.y * s * 2, 0);
+		var w = s * 2; // width
+		
+		// Adding s adds hardcoded offset
+		var posVec3 = new Vector3(s + position.x * w, s + position.y * w, 0);
 
 		var i = 0;
 		var v = 0;
 
-		for (int n = 0; n < 2; n++)
+		for (int y = 0; y < size; y++)
 		{
-			vertex_array[v] = new Vector3(-s, -s, 0) + o + posVec3;
-			normal_array[v] = new Vector3( 0, 0,  s) + o + posVec3;
-			uv_array    [v] = new Vector2( 0, 0    );
+			for (int x = 0; x < size; x++)
+			{
+				vertices    [v] = new Vector3(-s, -s, 0) + posVec3;
+				normals     [v] = new Vector3( 0, 0,  s);
+				uvs         [v] = new Vector2( 0, 0    );
 																	   
-			vertex_array[v + 1] = new Vector3(-s, s, 0 ) + o + posVec3;
-			normal_array[v + 1] = new Vector3( 0, 0, s ) + o + posVec3;
-			uv_array    [v + 1] = new Vector2( 0, s    );
+				vertices[v + 1] = new Vector3(-s, s, 0 ) + posVec3;
+				normals [v + 1] = new Vector3( 0, 0, s );
+				uvs     [v + 1] = new Vector2( 0, s    );
 
-			vertex_array[v + 2] = new Vector3( s, s, 0 ) + o + posVec3;
-			normal_array[v + 2] = new Vector3( 0, 0, s ) + o + posVec3;
-			uv_array    [v + 2] = new Vector2( s, s    );	
+				vertices[v + 2] = new Vector3( s, s, 0 ) + posVec3;
+				normals [v + 2] = new Vector3( 0, 0, s );
+				uvs     [v + 2] = new Vector2( s, s    );	
 
-			vertex_array[v + 3] = new Vector3( s, -s, 0) + o + posVec3;
-			normal_array[v + 3] = new Vector3( 0, 0, s ) + o + posVec3;
-			uv_array    [v + 3] = new Vector2( s, 0    );
+				vertices[v + 3] = new Vector3( s, -s, 0) + posVec3;
+				normals [v + 3] = new Vector3( 0, 0, s );
+				uvs     [v + 3] = new Vector2( s, 0    );
 
-			index_array[i]     = i;
-			index_array[i + 1] = i + 1;
-			index_array[i + 2] = i + 2;
+				indices[i]     = v;
+				indices[i + 1] = v + 1;
+				indices[i + 2] = v + 2;
 
-			index_array[i + 3] = i + 2;
-			index_array[i + 4] = i + 3;
-			index_array[i + 5] = i + 0;
+				indices[i + 3] = v + 2;
+				indices[i + 4] = v + 3;
+				indices[i + 5] = v + 0;
 
-			v += 4;
-			i += 6;
-			posVec3 += new Vector3(s * 2, 0, 0);
+				v += 4;
+				i += 6;
+
+				// Move down column by 1
+				posVec3 += new Vector3(w, 0, 0);
+			}
+
+			// Reset column and move down 1 row
+			posVec3 += new Vector3(-w * size, w, 0);
 		}
 
 		var arrays = new Godot.Collections.Array();
 		arrays.Resize((int)Mesh.ArrayType.Max);
-		arrays[(int)Mesh.ArrayType.Vertex] = vertex_array;
-		arrays[(int)Mesh.ArrayType.Normal] = normal_array;
-		arrays[(int)Mesh.ArrayType.TexUv] = uv_array;
-		arrays[(int)Mesh.ArrayType.Index] = index_array;
+		arrays[(int)Mesh.ArrayType.Vertex] = vertices;
+		arrays[(int)Mesh.ArrayType.Normal] = normals;
+		arrays[(int)Mesh.ArrayType.TexUv] = uvs;
+		arrays[(int)Mesh.ArrayType.Index] = indices;
 
 		var mesh = new ArrayMesh();
 		mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
@@ -116,7 +127,7 @@ public partial class World : TileMap
 
 	public void Generate(WorldSettings settings)
 	{
-		GenerateSquare(new Vector2(-1, -1));
+		GeneratePlane(new Vector2(0, 0), 5);
 		return;
 		DeleteWorld();
 		PrevChunkSize = WorldSettings.ChunkSize;
