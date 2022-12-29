@@ -27,8 +27,8 @@ public enum BiomeType
 
 public partial class World : TileMap
 {
-	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Voronoi;
-	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex;
+	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Simplex1;
+	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex2;
 
 	private WorldSettings WorldSettings { get; set; }
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
@@ -169,7 +169,7 @@ public partial class World : TileMap
 		MoistureNoise.Seed = settings.Seed.GetHashCode();
 
 		HeatNoise.Frequency = settings.TemperatureFrequency;
-		HeatNoise.Seed = settings.Seed.GetHashCode();
+		HeatNoise.Seed = settings.Seed.GetHashCode() + 1000;
 
 		var biomeData = new BiomeType[settings.ChunkSize, settings.ChunkSize];
 
@@ -180,17 +180,17 @@ public partial class World : TileMap
 			{
 				var moistureValue = Mathf.Clamp
 					(
-						MoistureNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
+						(MoistureNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
 							+ settings.MoistureWetness 
-							- settings.MoistureDryness
+							- settings.MoistureDryness) * settings.MoistureStrength
 							, 0, 1
 					);
 
 				var heatValue = Mathf.Clamp
 					(
-						HeatNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
+						(HeatNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
 							+ settings.TemperatureHot  
-							- settings.TemperatureCold
+							- settings.TemperatureCold) * settings.TemperatureStrength
 							, 0, 1
 					);
 

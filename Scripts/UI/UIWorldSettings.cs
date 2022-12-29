@@ -7,10 +7,12 @@ public partial class UIWorldSettings : Node
 	[Export] public NodePath NodePathMoistureWet { get; set; }
 	[Export] public NodePath NodePathMoistureDry { get; set; }
 	[Export] public NodePath NodePathMoistureFrequency { get; set; }
+	[Export] public NodePath NodePathMoistureStrength { get; set; }
 	[Export] public NodePath NodePathSeed { get; set; }
 	[Export] public NodePath NodePathTemperatureHot { get; set; }
 	[Export] public NodePath NodePathTemperatureCold { get; set; }
 	[Export] public NodePath NodePathTemperatureFrequency { get; set; }
+	[Export] public NodePath NodePathTemperatureStrength { get; set; }
 	[Export] public NodePath NodePathUpdateOnEdit { get; set; }
 	[Export] public NodePath NodePathChunkSize { get; set; }
 	[Export] public NodePath NodePathSpawnSize { get; set; }
@@ -27,9 +29,11 @@ public partial class UIWorldSettings : Node
 		WorldSettings.MoistureWetness = (float)GetNode<Slider>(NodePathMoistureWet).Value;
 		WorldSettings.MoistureDryness = (float)GetNode<Slider>(NodePathMoistureDry).Value;
 		WorldSettings.MoistureFrequency = (float)GetNode<Slider>(NodePathMoistureFrequency).Value;
+		WorldSettings.MoistureStrength = (float)GetNode<Slider>(NodePathMoistureStrength).Value;
 		WorldSettings.TemperatureHot = (float)GetNode<Slider>(NodePathTemperatureHot).Value;
 		WorldSettings.TemperatureCold = (float)GetNode<Slider>(NodePathTemperatureCold).Value;
 		WorldSettings.TemperatureFrequency = (float)GetNode<Slider>(NodePathTemperatureFrequency).Value;
+		WorldSettings.TemperatureStrength = (float)GetNode<Slider>(NodePathTemperatureStrength).Value;
 		UpdateOnEdit = GetNode<CheckBox>(NodePathUpdateOnEdit).ButtonPressed;
 		WorldSettings.ChunkSize = int.Parse(GetNode<LineEdit>(NodePathChunkSize).Text);
 		WorldSettings.Seed = GetNode<LineEdit>(NodePathSeed).Text;
@@ -66,6 +70,12 @@ public partial class UIWorldSettings : Node
 		UpdateWorldOnEdit();
 	}
 
+	private void _on_moisture_strength_value_changed(float v)
+	{
+		WorldSettings.MoistureStrength = v;
+		UpdateWorldOnEdit();
+	}
+
 	private void _on_temperature_hot_value_changed(float v)
 	{
 		WorldSettings.TemperatureHot = v;
@@ -81,6 +91,12 @@ public partial class UIWorldSettings : Node
 	private void _on_temperature_frequency_value_changed(float v)
 	{
 		WorldSettings.TemperatureFrequency = v;
+		UpdateWorldOnEdit();
+	}
+
+	private void _on_temperature_strength_value_changed(float v)
+	{
+		WorldSettings.TemperatureStrength = v;
 		UpdateWorldOnEdit();
 	}
 
@@ -116,8 +132,10 @@ public class WorldSettings
 	public float MoistureWetness { get; set; }
 	public float MoistureDryness { get; set; }
 	public float MoistureFrequency { get; set; }
+	public float MoistureStrength { get; set; }
 	public float TemperatureHot { get; set; }
 	public float TemperatureCold { get; set; }
 	public float TemperatureFrequency { get; set; }
+	public float TemperatureStrength { get; set; }
 	public string Seed { get; set; }
 }

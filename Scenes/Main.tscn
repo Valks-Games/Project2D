@@ -54,10 +54,12 @@ NodePathWorld = NodePath("../../TileMap")
 NodePathMoistureWet = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Wetness/MoistureWetness")
 NodePathMoistureDry = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Dryness/MoistureDryness")
 NodePathMoistureFrequency = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Frequency/MoistureFrequency")
+NodePathMoistureStrength = NodePath("MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Strength/MoistureStrength")
 NodePathSeed = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Seed/Seed")
 NodePathTemperatureHot = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Hot/Temperature")
 NodePathTemperatureCold = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Cold/TemperatureCold")
 NodePathTemperatureFrequency = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency/TemperatureFrequency")
+NodePathTemperatureStrength = NodePath("MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Strength/TemperatureStrength")
 NodePathUpdateOnEdit = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Update On Edit/UpdateOnEdit")
 NodePathChunkSize = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Chunk Size/ChunkSize")
 NodePathSpawnSize = NodePath("MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Spawn Size/SpawnSize")
@@ -137,6 +139,22 @@ max_value = 0.05
 step = 0.001
 value = 0.005
 
+[node name="Strength" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Strength"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Strength"
+
+[node name="MoistureStrength" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Strength"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 2.0
+step = 0.001
+value = 1.0
+
 [node name="Temperature" type="PanelContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -201,6 +219,22 @@ size_flags_vertical = 1
 max_value = 0.05
 step = 0.001
 value = 0.005
+
+[node name="Strength" type="HBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Strength"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Strength"
+
+[node name="TemperatureStrength" type="HSlider" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Strength"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 2.0
+step = 0.001
+value = 1.0
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -268,9 +302,11 @@ text = "Generate"
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Dryness/MoistureDryness" to="CanvasLayer/UIWorldSettings" method="_on_moisture_dryness_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Wetness/MoistureWetness" to="CanvasLayer/UIWorldSettings" method="_on_moisture_wetness_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Frequency/MoistureFrequency" to="CanvasLayer/UIWorldSettings" method="_on_moisture_frequency_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Moisture/MarginContainer/VBox/Strength/MoistureStrength" to="CanvasLayer/UIWorldSettings" method="_on_moisture_strength_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Hot/Temperature" to="CanvasLayer/UIWorldSettings" method="_on_temperature_hot_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Cold/TemperatureCold" to="CanvasLayer/UIWorldSettings" method="_on_temperature_cold_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Frequency/TemperatureFrequency" to="CanvasLayer/UIWorldSettings" method="_on_temperature_frequency_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/Temperature/MarginContainer/VBox/Strength/TemperatureStrength" to="CanvasLayer/UIWorldSettings" method="_on_temperature_strength_value_changed"]
 [connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Seed/Seed" to="CanvasLayer/UIWorldSettings" method="_on_seed_text_changed"]
 [connection signal="toggled" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Update On Edit/UpdateOnEdit" to="CanvasLayer/UIWorldSettings" method="_on_update_on_edit_toggled"]
 [connection signal="text_changed" from="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Chunk Size/ChunkSize" to="CanvasLayer/UIWorldSettings" method="_on_chunk_size_text_changed"]
