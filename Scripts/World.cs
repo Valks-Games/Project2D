@@ -65,6 +65,7 @@ public partial class World : TileMap
 	public void Generate(WorldSettings settings)
 	{
 		DeleteWorld();
+
 		WorldSettings = settings;
 
 		for (int x = -settings.SpawnSize; x <= settings.SpawnSize; x++)
@@ -88,9 +89,10 @@ public partial class World : TileMap
 
 	public void GenerateChunk(Vector2 chunkCoords, int size, BiomeType[,] biomeData)
 	{
+		Logger.LogMs(() => { 
 		var vertices = new Vector3[4 * size * size];
-		var normals  = new Vector3[4 * size * size];
-		var uvs      = new Vector2[4 * size * size];
+		//var normals  = new Vector3[4 * size * size];
+		//var uvs      = new Vector2[4 * size * size];
 		var colors   = new   Color[4 * size * size];
 		var indices  = new     int[6 * size * size];
 
@@ -114,20 +116,20 @@ public partial class World : TileMap
 				Biomes[biomeData[x, z]].Generate(colors, v);
 
 				vertices    [v] = new Vector3(-s, -s, 0) + posVec3;
-				normals     [v] = new Vector3( 0, 0,  s);
-				uvs         [v] = new Vector2( 0, 0    );
+				//normals     [v] = new Vector3( 0, 0,  s);
+				//uvs         [v] = new Vector2( 0, 0    );
 																	   
 				vertices[v + 1] = new Vector3(-s, s, 0 ) + posVec3;
-				normals [v + 1] = new Vector3( 0, 0, s );
-				uvs     [v + 1] = new Vector2( 0, s    );
+				//normals [v + 1] = new Vector3( 0, 0, s );
+				//uvs     [v + 1] = new Vector2( 0, s    );
 
 				vertices[v + 2] = new Vector3( s, s, 0 ) + posVec3;
-				normals [v + 2] = new Vector3( 0, 0, s );
-				uvs     [v + 2] = new Vector2( s, s    );	
+				//normals [v + 2] = new Vector3( 0, 0, s );
+				//uvs     [v + 2] = new Vector2( s, s    );	
 
 				vertices[v + 3] = new Vector3( s, -s, 0) + posVec3;
-				normals [v + 3] = new Vector3( 0, 0, s );
-				uvs     [v + 3] = new Vector2( s, 0    );
+				//normals [v + 3] = new Vector3( 0, 0, s );
+				//uvs     [v + 3] = new Vector2( s, 0    );
 
 				indices[i]     = v;
 				indices[i + 1] = v + 1;
@@ -151,8 +153,8 @@ public partial class World : TileMap
 		var arrays = new Godot.Collections.Array();
 		arrays.Resize((int)Mesh.ArrayType.Max);
 		arrays[(int)Mesh.ArrayType.Vertex] = vertices;
-		arrays[(int)Mesh.ArrayType.Normal] = normals;
-		arrays[(int)Mesh.ArrayType.TexUv] = uvs;
+		//arrays[(int)Mesh.ArrayType.Normal] = normals;
+		//arrays[(int)Mesh.ArrayType.TexUv] = uvs;
 		arrays[(int)Mesh.ArrayType.Color] = colors;
 		arrays[(int)Mesh.ArrayType.Index] = indices;
 
@@ -161,17 +163,18 @@ public partial class World : TileMap
 
 		var meshInstance = new MeshInstance2D { Mesh = mesh };
 		AddChild(meshInstance);
+		}, "GenerateChunk");
 	}
 
 	private BiomeType[,] GenerateBiomeData(Vector2 chunkCoords, WorldSettings settings)
 	{
+		var biomeData = new BiomeType[settings.ChunkSize, settings.ChunkSize];
+		Logger.LogMs(() => { 
 		MoistureNoise.Frequency = settings.MoistureFrequency;
 		MoistureNoise.Seed = settings.Seed.GetHashCode();
 
 		HeatNoise.Frequency = settings.TemperatureFrequency;
 		HeatNoise.Seed = settings.Seed.GetHashCode() + 1000;
-
-		var biomeData = new BiomeType[settings.ChunkSize, settings.ChunkSize];
 
 		var chunkPos = chunkCoords * settings.ChunkSize;
 
@@ -199,14 +202,14 @@ public partial class World : TileMap
 				biomeData[x, z] = biome;
 
 				// Store information about each tile
-				var tile = new Tile();
+				/*var tile = new Tile();
 				tile.Moisture = moistureValue;
 				tile.Heat = heatValue;
 				tile.BiomeType = biome;
 
-				Tiles[new Vector2(x, z)] = tile;
+				Tiles[new Vector2(x, z)] = tile;*/
 			}
-
+		}, "GenerateBiomeData");
 		return biomeData;
 	}
 
