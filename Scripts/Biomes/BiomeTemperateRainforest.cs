@@ -11,6 +11,6 @@ public class BiomeTemperateRainforest : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#1E482A"));
+		World.ColorTile(colors, v, new Color("#1E482A"));
 	}
 }

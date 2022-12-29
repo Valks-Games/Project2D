@@ -30,12 +30,7 @@ public partial class World : TileMap
 	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Voronoi;
 	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex;
 
-	private WorldSettings WorldSettings { get; set; } = new() 
-	{
-		ChunkSize = 300, // required otherwise PreChunkSize will not work correctly for the first run
-		// must be set to whatever chunkSize is set in the UI
-		// not ideal, but this is how it has to be for now
-	};
+	private WorldSettings WorldSettings { get; set; }
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
 
 	private Dictionary<BiomeType, Biome> Biomes { get; set; }
@@ -49,7 +44,6 @@ public partial class World : TileMap
 		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.BorealForest, BiomeType.SeasonalForest,      BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest}, // WETTER
 		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.BorealForest, BiomeType.TemperateRainforest, BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest}  // WETTEST
 	};
-	public int PrevChunkSize { get; set; }
 
 	public override void _Ready()
 	{
@@ -71,14 +65,13 @@ public partial class World : TileMap
 	public void Generate(WorldSettings settings)
 	{
 		DeleteWorld();
-		PrevChunkSize = WorldSettings.ChunkSize;
 		WorldSettings = settings;
 
-		var worldSize = 1;
+		var worldSize = 4;
 
-		for (int x = -worldSize; x < worldSize * 2; x++)
-			for (int z = -worldSize; z < worldSize * 2; z++)
-				GeneratePlane(new Vector2(x, z), settings.ChunkSize, GenerateBiomeData(new Vector2(x, z), settings));
+		for (int x = -worldSize; x <= worldSize; x++)
+			for (int z = -worldSize; z <= worldSize; z++)
+				GenerateChunk(new Vector2(x, z), settings.ChunkSize, GenerateBiomeData(new Vector2(x, z), settings));
 	}
 
 	public void DeleteWorld()
@@ -87,7 +80,7 @@ public partial class World : TileMap
 			child.QueueFree();
 	}
 
-	public void ColorSquare(Color[] colors, int v, Color color)
+	public void ColorTile(Color[] colors, int v, Color color)
 	{
 		colors    [v] = color;
 		colors[v + 1] = color;
@@ -95,7 +88,7 @@ public partial class World : TileMap
 		colors[v + 3] = color;
 	}
 
-	public void GeneratePlane(Vector2 chunkCoords, int size, BiomeType[,] biomeData)
+	public void GenerateChunk(Vector2 chunkCoords, int size, BiomeType[,] biomeData)
 	{
 		var vertices = new Vector3[4 * size * size];
 		var normals  = new Vector3[4 * size * size];
@@ -105,9 +98,13 @@ public partial class World : TileMap
 
 		var s = 32; // hard coded size
 		var w = s * 2; // width
+
+		var chunkSize = w * size;
+		var chunkPos = chunkCoords * chunkSize;
 		
-		// Adding s adds hardcoded offset
-		var posVec3 = new Vector3(s + chunkCoords.x * w * size, s + chunkCoords.y * w * size, 0);
+		// Adding s adds hardcoded offset to align with godots grid
+		// Also offset by (-chunkSize / 2) to center chunk
+		var posVec3 = new Vector3(s + (-chunkSize / 2) + chunkPos.x, s + (-chunkSize / 2) + chunkPos.y, 0);
 
 		var i = 0;
 		var v = 0;

@@ -11,6 +11,6 @@ public class BiomeSeasonalForest : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#4C6415"));
+		World.ColorTile(colors, v, new Color("#4C6415"));
 	}
 }

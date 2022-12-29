@@ -11,6 +11,6 @@ public class BiomeBorealForest : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#5E7438"));
+		World.ColorTile(colors, v, new Color("#5E7438"));
 	}
 }

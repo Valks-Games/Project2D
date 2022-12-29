@@ -11,6 +11,6 @@ public class BiomeGrassland : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#A6E147"));
+		World.ColorTile(colors, v, new Color("#A6E147"));
 	}
 }

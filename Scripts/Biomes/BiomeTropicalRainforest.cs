@@ -13,7 +13,7 @@ public class BiomeTropicalRainForest : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#427B00"));
+		World.ColorTile(colors, v, new Color("#427B00"));
 	}
 
 	/*public override void Generate(int x, int z)

@@ -11,6 +11,6 @@ public class BiomeIce : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#FFFFFF"));
+		World.ColorTile(colors, v, new Color("#FFFFFF"));
 	}
 }

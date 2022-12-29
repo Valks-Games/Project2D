@@ -11,6 +11,6 @@ public class BiomeDesert : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#EDDB76"));
+		World.ColorTile(colors, v, new Color("#EDDB76"));
 	}
 }

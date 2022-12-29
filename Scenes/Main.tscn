@@ -245,7 +245,7 @@ text = "Chunk Size"
 
 [node name="ChunkSize" type="LineEdit" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-text = "300"
+text = "100"
 alignment = 1
 
 [node name="Generate" type="Button" parent="CanvasLayer/UIWorldSettings/MarginContainer/VBoxContainer"]

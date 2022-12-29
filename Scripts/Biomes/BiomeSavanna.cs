@@ -11,6 +11,6 @@ public class BiomeSavanna : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#B2D15B"));
+		World.ColorTile(colors, v, new Color("#B2D15B"));
 	}
 }

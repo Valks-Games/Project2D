@@ -11,6 +11,6 @@ public class BiomeTundra : Biome
 
 	public override void Generate(Color[] colors, int v)
 	{
-		World.ColorSquare(colors, v, new Color("#678071"));
+		World.ColorTile(colors, v, new Color("#678071"));
 	}
 }
