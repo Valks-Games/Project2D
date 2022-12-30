@@ -117,17 +117,17 @@ public partial class UIWorldSettings : Node
 			new SettingsCheckBox
 			{
 				Name = "UpdateOnEdit",
-				Pressed = true
+				Pressed = false
 			},
 			new SettingsLineEdit
 			{
 				Name = "ChunkSize",
-				Value = "250"
+				Value = "100"
 			},
 			new SettingsLineEdit
 			{
 				Name = "SpawnSize",
-				Value = "0"
+				Value = "4"
 			}
 		);
 

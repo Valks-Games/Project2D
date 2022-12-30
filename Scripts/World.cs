@@ -25,10 +25,23 @@ public enum BiomeType
 	Ice
 }
 
+public class MoistureHeat
+{
+	public float Moisture { get; set; }
+	public float Heat { get; set; }
+}
+
+public class Pos
+{
+	public int X { get; set; }
+	public int Z { get; set; }
+}
+
 public partial class World : TileMap
 {
 	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Simplex1;
 	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex2;
+	private FastNoiseLite RiverNoise { get; set; } = NoiseTextures.Simplex3;
 
 	private WorldSettings WorldSettings { get; set; }
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
@@ -105,11 +118,12 @@ public partial class World : TileMap
 		var w = s * 2; // width
 
 		var chunkSize = w * size;
-		var chunkPos = chunkCoords * chunkSize;
+		var tileChunkPos = chunkCoords * chunkSize; // (6400, 6400)
+		var chunkPos = chunkCoords * size; // (100, 100)
 		
 		// Adding s adds hardcoded offset to align with godots grid
 		// Also offset by (-chunkSize / 2) to center chunk
-		var posVec3 = new Vector3(s + (-chunkSize / 2) + chunkPos.x, s + (-chunkSize / 2) + chunkPos.y, 0);
+		var posVec3 = new Vector3(s + (-chunkSize / 2) + tileChunkPos.x, s + (-chunkSize / 2) + tileChunkPos.y, 0);
 
 		var i = 0;
 		var v = 0;
@@ -155,6 +169,21 @@ public partial class World : TileMap
 			posVec3 += new Vector3(-w * size, w, 0);
 		}
 
+		v = 0;
+
+		for (int z = 0; z < size; z++)
+			for (int x = 0; x < size; x++)
+			{
+				// Increasing the fractal weighted strength to the maximum value (1) seems
+				// to get rid of any river loops, mini lakes and other artifacts
+				var noise = RiverNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z);
+
+				if (noise is > 0f and < 0.05f)
+					ColorTile(colors, v, Colors.CornflowerBlue);
+
+				v += 4;
+			}
+
 		var arrays = new Godot.Collections.Array();
 		arrays.Resize((int)Mesh.ArrayType.Max);
 		arrays[(int)Mesh.ArrayType.Vertex] = vertices;
@@ -185,6 +214,9 @@ public partial class World : TileMap
 
 	private BiomeType[,] GenerateBiomeData(Vector2 chunkCoords, WorldSettings settings)
 	{
+		// GenerateBiomeData function is called in a loop
+		// Looking up all these values from Values dictionary seems unoptimal
+		// Especially calculating the world seed everytime
 		var chunkSize = int.Parse((string)settings.Values["ChunkSize"]);
 		var biomeData = new BiomeType[chunkSize, chunkSize];
 
@@ -211,6 +243,8 @@ public partial class World : TileMap
 		var temperatureCold = (float)settings.Values["TemperatureCold"];
 		var temperatureStrength = (float)settings.Values["TemperatureStrength"];
 
+		var moistureHeatData = new MoistureHeat[chunkSize, chunkSize];
+
 		for (int x = 0; x < chunkSize; x++)
 			for (int z = 0; z < chunkSize; z++)
 			{
@@ -233,6 +267,12 @@ public partial class World : TileMap
 				// Generate the tiles
 				var biome = GetBiome(moistureValue, heatValue);
 				biomeData[x, z] = biome;
+
+				moistureHeatData[x, z] = new MoistureHeat
+				{
+					Moisture = moistureValue,
+					Heat = heatValue
+				};
 
 				// Store information about each tile
 				/*var tile = new Tile();
