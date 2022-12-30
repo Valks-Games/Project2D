@@ -2,3 +2,4 @@
 
 [resource]
 frequency = 0.015
+domain_warp_enabled = true

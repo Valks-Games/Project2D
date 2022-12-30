@@ -1,214 +1,297 @@
-namespace Project2D;
+using Newtonsoft.Json.Linq;
 
-public class SliderSettings
-{
-	public string Name;
-	public double MaxValue;
-	public double Step;
-}
+namespace Project2D;
 
 public partial class UIWorldSettings : Node
 {
 	[Export] public NodePath NodePathWorld { get; set; }
-
-	[Export] public NodePath NodePathMoistureWet { get; set; }
-	[Export] public NodePath NodePathMoistureDry { get; set; }
-	[Export] public NodePath NodePathMoistureFrequency { get; set; }
-	[Export] public NodePath NodePathMoistureStrength { get; set; }
-	[Export] public NodePath NodePathSeed { get; set; }
-	[Export] public NodePath NodePathTemperatureHot { get; set; }
-	[Export] public NodePath NodePathTemperatureCold { get; set; }
-	[Export] public NodePath NodePathTemperatureFrequency { get; set; }
-	[Export] public NodePath NodePathTemperatureStrength { get; set; }
-	[Export] public NodePath NodePathUpdateOnEdit { get; set; }
-	[Export] public NodePath NodePathChunkSize { get; set; }
-	[Export] public NodePath NodePathSpawnSize { get; set; }
-
 	[Export] public NodePath NodePathVBox { get; set; }
 
 	private World World { get; set; }
-	private bool UpdateOnEdit { get; set; }
 	private WorldSettings WorldSettings { get; set; } = new();
 
 	public override void _Ready()
 	{
 		World = GetNode<World>(NodePathWorld);
 
-		/*var parent = GetNode<VBoxContainer>(NodePathVBox);
+		var parent = GetNode<VBoxContainer>(NodePathVBox);
 
-		var settings = CreateSettingsSection("Moisture", 
-				new SliderSettings
+		var settingsMoisture = CreateSettingsSection("Moisture", 
+				new SettingsSlider
 				{
 					Name = "Dry",
-					MaxValue = 1,
-					Step = 0.01
+					MaxValue = 1f,
+					Step = 0.01f
 				},
-				new SliderSettings
+				new SettingsSlider
 				{
 					Name = "Wet",
-					MaxValue = 1,
-					Step = 0.01
+					MaxValue = 1f,
+					Step = 0.01f
+				},
+				new SettingsSlider
+				{
+					Name = "Frequency",
+					Value = 0.005f,
+					MaxValue = 0.05f,
+					Step = 0.001f
+				},
+				new SettingsSlider
+				{
+					Name = "Octaves",
+					Value = 5,
+					MinValue = 1,
+					MaxValue = 10,
+					Step = 1
+				},
+				new SettingsSlider
+				{
+					Name = "Strength",
+					Value = 1f,
+					MaxValue = 2f,
+					Step = 0.01f
 				}
 			);
 
-		parent.AddChild(settings);*/
+		var settingsMoistureDomainWarp = CreateSettingsSection("MoistureDomainWarp",
+				new SettingsSlider
+				{
+					Name = "Amplitude",
+					Value = 0,
+					MaxValue = 75,
+					Step = 0.01f
+				});
 
-		// Set values from what is set in the UI
-		WorldSettings.MoistureWetness = (float)GetNode<Slider>(NodePathMoistureWet).Value;
-		WorldSettings.MoistureDryness = (float)GetNode<Slider>(NodePathMoistureDry).Value;
-		WorldSettings.MoistureFrequency = (float)GetNode<Slider>(NodePathMoistureFrequency).Value;
-		WorldSettings.MoistureStrength = (float)GetNode<Slider>(NodePathMoistureStrength).Value;
-		WorldSettings.TemperatureHot = (float)GetNode<Slider>(NodePathTemperatureHot).Value;
-		WorldSettings.TemperatureCold = (float)GetNode<Slider>(NodePathTemperatureCold).Value;
-		WorldSettings.TemperatureFrequency = (float)GetNode<Slider>(NodePathTemperatureFrequency).Value;
-		WorldSettings.TemperatureStrength = (float)GetNode<Slider>(NodePathTemperatureStrength).Value;
-		UpdateOnEdit = GetNode<CheckBox>(NodePathUpdateOnEdit).ButtonPressed;
-		WorldSettings.ChunkSize = int.Parse(GetNode<LineEdit>(NodePathChunkSize).Text);
-		WorldSettings.Seed = GetNode<LineEdit>(NodePathSeed).Text;
-		WorldSettings.SpawnSize = int.Parse(GetNode<LineEdit>(NodePathSpawnSize).Text);
+		var settingsTemperature = CreateSettingsSection("Temperature",
+				new SettingsSlider
+				{
+					Name = "Hot",
+					MaxValue = 1f,
+					Step = 0.01f
+				},
+				new SettingsSlider
+				{
+					Name = "Cold",
+					MaxValue = 1f,
+					Step = 0.01f
+				},
+				new SettingsSlider
+				{
+					Name = "Frequency",
+					Value = 0.005f,
+					MaxValue = 0.05f,
+					Step = 0.001f
+				},
+				new SettingsSlider
+				{
+					Name = "Octaves",
+					Value = 5,
+					MinValue = 1,
+					MaxValue = 10,
+					Step = 1
+				},
+				new SettingsSlider
+				{
+					Name = "Strength",
+					Value = 1f,
+					MaxValue = 2f,
+					Step = 0.01f
+				}
+			);
+
+		var settingsTemperatureDomainWarp = CreateSettingsSection("TemperatureDomainWarp",
+				new SettingsSlider
+				{
+					Name = "Amplitude",
+					Value = 0,
+					MaxValue = 75,
+					Step = 0.01f
+				});
+
+		var settingsGeneral = CreateSettingsSection("", 
+			new SettingsLineEdit
+			{
+				Name = "Seed",
+				Value = "cat"
+			},
+			new SettingsCheckBox
+			{
+				Name = "UpdateOnEdit",
+				Pressed = true
+			},
+			new SettingsLineEdit
+			{
+				Name = "ChunkSize",
+				Value = "250"
+			},
+			new SettingsLineEdit
+			{
+				Name = "SpawnSize",
+				Value = "0"
+			}
+		);
+
+		parent.AddChild(settingsMoisture);
+		parent.AddChild(settingsMoistureDomainWarp);
+		parent.AddChild(settingsTemperature);
+		parent.AddChild(settingsTemperatureDomainWarp);
+		parent.AddChild(settingsGeneral);
+		parent.AddChild(CreateButton("Generate"));
 
 		// Immediately generate the world
 		World.Generate(WorldSettings);
 	}
 
-	private PanelContainer CreateSettingsSection(string name, params SliderSettings[] sliders)
+	private PanelContainer CreateSettingsSection(string name, params Settings[] sliders)
 	{
 		var panelContainer = new PanelContainer();
 		var marginContainer = new MarginContainer();
 		var vbox = new VBoxContainer();
-		var label = new Label();
 
-		label.Text = "Moisture";
-		label.HorizontalAlignment = HorizontalAlignment.Center;
-		marginContainer.AddThemeConstantOverride("margin_left", 5);
-		marginContainer.AddThemeConstantOverride("margin_right", 5);
-		marginContainer.AddThemeConstantOverride("margin_top", 5);
-		marginContainer.AddThemeConstantOverride("margin_bottom", 5);
+		if (!string.IsNullOrWhiteSpace(name))
+			vbox.AddChild(new Label {
+				Text = name.AddSpaceBeforeEachCapital(),
+				HorizontalAlignment = HorizontalAlignment.Center
+			});
+
+		foreach (var direction in new string[] { "left", "right", "up", "down" })
+			marginContainer.AddThemeConstantOverride($"margin_{direction}", 5);
 
 		panelContainer.AddChild(marginContainer);
 		marginContainer.AddChild(vbox);
 
-		vbox.AddChild(label);
-		foreach (var slider in sliders)
-			vbox.AddChild(CreateSlider(slider));
+		foreach (var element in sliders)
+		{
+			if (element is SettingsSlider slider)
+				vbox.AddChild(CreateSlider(name, slider));
 
+			if (element is SettingsLineEdit lineEdit)
+				vbox.AddChild(CreateLineEdit(name, lineEdit));
+
+			if (element is SettingsCheckBox checkBox)
+				vbox.AddChild(CreateCheckbox(name, checkBox));
+		}
+			
 		return panelContainer;
 	}
 
-	private HBoxContainer CreateSlider(SliderSettings settings)
+	private HBoxContainer CreateSlider(string name, SettingsSlider settings)
 	{
-		var hbox = new HBoxContainer();
-		var label = new Label();
-		var slider = new HSlider();
+		var hbox = CreateHBox(settings.Name);
+		var slider = new HSlider {
+			MinValue = settings.MinValue,
+			MaxValue = settings.MaxValue,
+			Step = settings.Step,
+			Value = settings.Value,
+			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
+			SizeFlagsVertical = (int)Control.SizeFlags.Fill
+		};
 
-		label.Text = settings.Name;
-		label.CustomMinimumSize = new Vector2(90, 0);
-		slider.MaxValue = settings.MaxValue;
-		slider.Step = settings.Step;
-		slider.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
-		slider.SizeFlagsVertical = (int)Control.SizeFlags.Fill;
-		slider.ValueChanged += v => WorldSettings.Values[settings.Name] = (float)v;
+		WorldSettings.Values[name + settings.Name] = settings.Value;
+		slider.ValueChanged += v =>
+		{
+			WorldSettings.Values[name + settings.Name] = (float)v;
 
-		hbox.AddChild(label);
+			if ((bool)WorldSettings.Values["UpdateOnEdit"])
+				World.Generate(WorldSettings);
+		};
+
 		hbox.AddChild(slider);
 
 		return hbox;
 	}
 
-	private void _on_spawn_size_text_changed(string v)
+	private HBoxContainer CreateLineEdit(string name, SettingsLineEdit settings)
 	{
-		if (!int.TryParse(v, out int num))
-			return;
+		var hbox = CreateHBox(settings.Name);
+		var lineEdit = new LineEdit
+		{
+			Text = settings.Value,
+			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
+		};
 
-		WorldSettings.SpawnSize = num;
-		UpdateWorldOnEdit();
+		WorldSettings.Values[name + settings.Name] = settings.Value;
+		lineEdit.TextChanged += v =>
+		{
+			WorldSettings.Values[name + settings.Name] = v;
+
+			if ((bool)WorldSettings.Values["UpdateOnEdit"])
+				World.Generate(WorldSettings);
+		};
+
+		hbox.AddChild(lineEdit);
+
+		return hbox;
 	}
 
-	private void _on_moisture_wetness_value_changed(float v)
+	private HBoxContainer CreateCheckbox(string name, SettingsCheckBox settings)
 	{
-		WorldSettings.MoistureWetness = v;
-		UpdateWorldOnEdit();
+		var hbox = CreateHBox(settings.Name);
+		var checkbox = new CheckBox {
+			ButtonPressed = settings.Pressed
+		};
+
+		WorldSettings.Values[name + settings.Name] = settings.Pressed;
+		checkbox.Toggled += v =>
+		{
+			WorldSettings.Values[name + settings.Name] = v;
+
+			if ((bool)WorldSettings.Values["UpdateOnEdit"])
+				World.Generate(WorldSettings);
+		};
+
+		hbox.AddChild(checkbox);
+
+		return hbox;
 	}
 
-	private void _on_moisture_dryness_value_changed(float v)
+	private HBoxContainer CreateHBox(string name)
 	{
-		WorldSettings.MoistureDryness = v;
-		UpdateWorldOnEdit();
+		var hbox = new HBoxContainer();
+
+		hbox.AddChild(new Label
+		{
+			CustomMinimumSize = new Vector2(90, 0),
+			Text = name.AddSpaceBeforeEachCapital()
+		});
+
+		return hbox;
 	}
 
-	private void _on_moisture_frequency_value_changed(float v)
+	private Button CreateButton(string name)
 	{
-		WorldSettings.MoistureFrequency = v;
-		UpdateWorldOnEdit();
-	}
+		var button = new Button();
+		button.Text = name;
+		button.Pressed += () => World.Generate(WorldSettings);
 
-	private void _on_moisture_strength_value_changed(float v)
-	{
-		WorldSettings.MoistureStrength = v;
-		UpdateWorldOnEdit();
-	}
-
-	private void _on_temperature_hot_value_changed(float v)
-	{
-		WorldSettings.TemperatureHot = v;
-		UpdateWorldOnEdit();
-	}
-
-	private void _on_temperature_cold_value_changed(float v)
-	{
-		WorldSettings.TemperatureCold = v;
-		UpdateWorldOnEdit();
-	}
-
-	private void _on_temperature_frequency_value_changed(float v)
-	{
-		WorldSettings.TemperatureFrequency = v;
-		UpdateWorldOnEdit();
-	}
-
-	private void _on_temperature_strength_value_changed(float v)
-	{
-		WorldSettings.TemperatureStrength = v;
-		UpdateWorldOnEdit();
-	}
-
-	private void _on_seed_text_changed(string v)
-	{
-		WorldSettings.Seed = v;
-		UpdateWorldOnEdit();
-	}
-
-	private void _on_chunk_size_text_changed(string v)
-	{
-		if (!int.TryParse(v, out int num))
-			return;
-
-		WorldSettings.ChunkSize = num;
-		UpdateWorldOnEdit();
-	}
-
-	private void _on_update_on_edit_toggled(bool v) => UpdateOnEdit = v;
-	private void _on_generate_pressed() => World.Generate(WorldSettings);
-
-	private void UpdateWorldOnEdit()
-	{
-		if (UpdateOnEdit)
-			World.Generate(WorldSettings);
+		return button;
 	}
 }
 
 public class WorldSettings
 {
-	public Dictionary<string, float> Values { get; set; } = new();
-	public int ChunkSize { get; set; }
-	public int SpawnSize { get; set; }
-	public float MoistureWetness { get; set; }
-	public float MoistureDryness { get; set; }
-	public float MoistureFrequency { get; set; }
-	public float MoistureStrength { get; set; }
-	public float TemperatureHot { get; set; }
-	public float TemperatureCold { get; set; }
-	public float TemperatureFrequency { get; set; }
-	public float TemperatureStrength { get; set; }
-	public string Seed { get; set; }
+	public Dictionary<string, object> Values { get; set; } = new();
+}
+
+public class Settings
+{
+	public string Name { get; set; }
+}
+
+public class SettingsSlider : Settings
+{
+	public float Value { get; set; }
+	public float MinValue { get; set; }
+	public float MaxValue { get; set; }
+	public float Step { get; set; }
+}
+
+public class SettingsLineEdit : Settings
+{
+	public string Value { get; set; }
+}
+
+public class SettingsCheckBox : Settings
+{
+	public bool Pressed { get; set; }
 }

@@ -64,13 +64,19 @@ public partial class World : TileMap
 
 	public void Generate(WorldSettings settings)
 	{
-		DeleteWorld();
-
 		WorldSettings = settings;
 
-		for (int x = -settings.SpawnSize; x <= settings.SpawnSize; x++)
-			for (int z = -settings.SpawnSize; z <= settings.SpawnSize; z++)
-				GenerateChunk(new Vector2(x, z), settings.ChunkSize, GenerateBiomeData(new Vector2(x, z), settings));
+		if (!int.TryParse((string)WorldSettings.Values["SpawnSize"], out int spawnSize))
+			return;
+
+		if (!int.TryParse((string)WorldSettings.Values["ChunkSize"], out int chunkSize))
+			return;
+
+		DeleteWorld();
+
+		for (int x = -spawnSize; x <= spawnSize; x++)
+			for (int z = -spawnSize; z <= spawnSize; z++)
+				GenerateChunk(new Vector2(x, z), chunkSize, GenerateBiomeData(new Vector2(x, z), settings));
 	}
 
 	public void DeleteWorld()
@@ -89,7 +95,6 @@ public partial class World : TileMap
 
 	public void GenerateChunk(Vector2 chunkCoords, int size, BiomeType[,] biomeData)
 	{
-		Logger.LogMs(() => { 
 		var vertices = new Vector3[4 * size * size];
 		//var normals  = new Vector3[4 * size * size];
 		//var uvs      = new Vector2[4 * size * size];
@@ -163,37 +168,65 @@ public partial class World : TileMap
 
 		var meshInstance = new MeshInstance2D { Mesh = mesh };
 		AddChild(meshInstance);
-		}, "GenerateChunk");
+	}
+
+	private int CalculateSeed(string seedString)
+	{
+		var seed = 0;
+
+		// Convert each character to a number and add them up
+		seedString.ForEach(c => {
+			var num = c + 0;
+			seed += num;
+		});
+
+		return seed;
 	}
 
 	private BiomeType[,] GenerateBiomeData(Vector2 chunkCoords, WorldSettings settings)
 	{
-		var biomeData = new BiomeType[settings.ChunkSize, settings.ChunkSize];
-		Logger.LogMs(() => { 
-		MoistureNoise.Frequency = settings.MoistureFrequency;
-		MoistureNoise.Seed = settings.Seed.GetHashCode();
+		var chunkSize = int.Parse((string)settings.Values["ChunkSize"]);
+		var biomeData = new BiomeType[chunkSize, chunkSize];
 
-		HeatNoise.Frequency = settings.TemperatureFrequency;
-		HeatNoise.Seed = settings.Seed.GetHashCode() + 1000;
+		var seed = CalculateSeed((string)settings.Values["Seed"]);
 
-		var chunkPos = chunkCoords * settings.ChunkSize;
+		MoistureNoise.Frequency = (float)settings.Values["MoistureFrequency"];
+		MoistureNoise.FractalOctaves = Convert.ToInt32(settings.Values["MoistureOctaves"]);
+		MoistureNoise.Seed = seed;
+		MoistureNoise.DomainWarpEnabled = true;
+		MoistureNoise.DomainWarpAmplitude = (float)settings.Values["MoistureDomainWarpAmplitude"];
 
-		for (int x = 0; x < settings.ChunkSize; x++)
-			for (int z = 0; z < settings.ChunkSize; z++)
+		HeatNoise.Frequency = (float)settings.Values["TemperatureFrequency"];
+		HeatNoise.FractalOctaves = Convert.ToInt32(settings.Values["TemperatureOctaves"]);
+		HeatNoise.Seed = seed + 1000;
+		HeatNoise.DomainWarpEnabled = true;
+		HeatNoise.DomainWarpAmplitude = (float)settings.Values["TemperatureDomainWarpAmplitude"];
+
+		var chunkPos = chunkCoords * chunkSize;
+		var moistureWet = (float)settings.Values["MoistureWet"];
+		var moistureDry = (float)settings.Values["MoistureDry"];
+		var moistureStrength = (float)settings.Values["MoistureStrength"];
+
+		var temperatureHot = (float)settings.Values["TemperatureHot"];
+		var temperatureCold = (float)settings.Values["TemperatureCold"];
+		var temperatureStrength = (float)settings.Values["TemperatureStrength"];
+
+		for (int x = 0; x < chunkSize; x++)
+			for (int z = 0; z < chunkSize; z++)
 			{
 				var moistureValue = Mathf.Clamp
 					(
 						(MoistureNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
-							+ settings.MoistureWetness 
-							- settings.MoistureDryness) * settings.MoistureStrength
+							+ moistureWet
+							- moistureDry) * (2 - moistureStrength)
 							, 0, 1
 					);
 
 				var heatValue = Mathf.Clamp
 					(
 						(HeatNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
-							+ settings.TemperatureHot  
-							- settings.TemperatureCold) * settings.TemperatureStrength
+							+ temperatureHot
+							- temperatureCold) * (2 - temperatureStrength)
 							, 0, 1
 					);
 
@@ -209,7 +242,7 @@ public partial class World : TileMap
 
 				Tiles[new Vector2(x, z)] = tile;*/
 			}
-		}, "GenerateBiomeData");
+
 		return biomeData;
 	}
 
