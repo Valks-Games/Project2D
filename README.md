@@ -6,11 +6,9 @@ Playing around with biome generation, might become something more, who knows.
 Contact me on Discord `valk#9904` for any questions you may have.
 
 ## Roadmap
-- [ ] expand biome table to also include a 3rd parameter "elevation" / add mountain and hilly biomes (required for rivers / other bodies of water)
-- [ ] figure out how to get more control over the shape and size of each biome
 - [ ] chunks generate when camera moves around
-- [ ] oceans / lakes / rivers
 - [ ] biome specific trees / rocks
+- [ ] add more color variety to the water
 
 ## Project Setup
 1. Install [Godot 4 Beta 10 Mono (C#)](https://godotengine.org/article/dev-snapshot-godot-4-0-beta-10#downloads)
