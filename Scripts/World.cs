@@ -44,6 +44,8 @@ public partial class World : TileMap
 	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex2;
 	private FastNoiseLite RiverNoise { get; set; } = NoiseTextures.Simplex3;
 	private FastNoiseLite RiverSpreadNoise { get; set; } = NoiseTextures.Simplex4;
+	private FastNoiseLite OceanNoise { get; set; } = NoiseTextures.Simplex5;
+	private FastNoiseLite OceanSpreadNoise { get; set; } = NoiseTextures.Simplex6;
 
 	private WorldSettings WorldSettings { get; set; }
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
@@ -90,6 +92,25 @@ public partial class World : TileMap
 			return;
 
 		DeleteWorld();
+
+		var worldSeed = CalculateSeed((string)settings.Values["Seed"]);
+
+		MoistureNoise.Frequency = (float)settings.Values["MoistureFrequency"];
+		MoistureNoise.FractalOctaves = Convert.ToInt32(settings.Values["MoistureOctaves"]);
+		MoistureNoise.Seed = worldSeed;
+		MoistureNoise.DomainWarpEnabled = true;
+		MoistureNoise.DomainWarpAmplitude = (float)settings.Values["MoistureDomainWarpAmplitude"];
+
+		HeatNoise.Frequency = (float)settings.Values["TemperatureFrequency"];
+		HeatNoise.FractalOctaves = Convert.ToInt32(settings.Values["TemperatureOctaves"]);
+		HeatNoise.Seed = worldSeed + 1000;
+		HeatNoise.DomainWarpEnabled = true;
+		HeatNoise.DomainWarpAmplitude = (float)settings.Values["TemperatureDomainWarpAmplitude"];
+
+		OceanNoise.Seed = worldSeed;
+		OceanSpreadNoise.Seed = worldSeed;
+		RiverNoise.Seed = worldSeed;
+		RiverSpreadNoise.Seed = worldSeed;
 
 		for (int x = -spawnSize; x <= spawnSize; x++)
 			for (int z = -spawnSize; z <= spawnSize; z++)
@@ -207,6 +228,21 @@ public partial class World : TileMap
 				if (noise1 is > 0.04f and < 0.06f)
 					moistureHeatData[x, z] = water;
 
+				var noise3 = OceanNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1;
+				var noise4 = OceanSpreadNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1;
+
+				// ensure wetland is around ocean
+				if (noise3 is < 0.51f)
+					moistureHeatData[x, z] = wetLand;
+
+				// add noisy wetland around ocean
+				if (noise4 is < 0.52f)
+					moistureHeatData[x, z] = wetLand;
+
+				// generate oceans
+				if (noise3 is < 0.5f)
+					moistureHeatData[x, z] = water;
+
 				v += 4;
 			}
 
@@ -259,21 +295,8 @@ public partial class World : TileMap
 		// Looking up all these values from Values dictionary seems unoptimal
 		// Especially calculating the world seed everytime
 		var chunkSize = int.Parse((string)settings.Values["ChunkSize"]);
-		var biomeData = new BiomeType[chunkSize, chunkSize];
 
 		var seed = CalculateSeed((string)settings.Values["Seed"]);
-
-		MoistureNoise.Frequency = (float)settings.Values["MoistureFrequency"];
-		MoistureNoise.FractalOctaves = Convert.ToInt32(settings.Values["MoistureOctaves"]);
-		MoistureNoise.Seed = seed;
-		MoistureNoise.DomainWarpEnabled = true;
-		MoistureNoise.DomainWarpAmplitude = (float)settings.Values["MoistureDomainWarpAmplitude"];
-
-		HeatNoise.Frequency = (float)settings.Values["TemperatureFrequency"];
-		HeatNoise.FractalOctaves = Convert.ToInt32(settings.Values["TemperatureOctaves"]);
-		HeatNoise.Seed = seed + 1000;
-		HeatNoise.DomainWarpEnabled = true;
-		HeatNoise.DomainWarpAmplitude = (float)settings.Values["TemperatureDomainWarpAmplitude"];
 
 		var chunkPos = chunkCoords * chunkSize;
 		var moistureWet = (float)settings.Values["MoistureWet"];
