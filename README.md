@@ -9,6 +9,13 @@ Contact me on Discord `valk#9904` for any questions you may have.
 - [ ] chunks generate when camera moves around
 - [ ] biome specific trees / rocks
 - [ ] add more color variety to the water
+- [ ] make a game out of this?
+
+## Contributing
+Looking for help with
+- Improving performance speeds of world generation code
+- Making the code look more human readable
+- Tackling the [projects current issues](https://github.com/valkyrienyanko/Project2D/issues)
 
 ## Project Setup
 1. Install [Godot 4 Beta 10 Mono (C#)](https://godotengine.org/article/dev-snapshot-godot-4-0-beta-10#downloads)
