@@ -21,7 +21,8 @@ public partial class UIWorldSettings : Node
 				{
 					Name = "Dry",
 					MaxValue = 1f,
-					Step = 0.01f
+					Step = 0.01f,
+					Value = 0.5f
 				},
 				new SettingsSlider
 				{

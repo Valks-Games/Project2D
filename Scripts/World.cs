@@ -22,7 +22,8 @@ public enum BiomeType
 	TemperateRainforest,
 	BorealForest,
 	Tundra,
-	Ice
+	Ice,
+	Water
 }
 
 public class MoistureHeat
@@ -42,20 +43,22 @@ public partial class World : TileMap
 	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Simplex1;
 	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex2;
 	private FastNoiseLite RiverNoise { get; set; } = NoiseTextures.Simplex3;
+	private FastNoiseLite RiverSpreadNoise { get; set; } = NoiseTextures.Simplex4;
 
 	private WorldSettings WorldSettings { get; set; }
 	private Dictionary<Vector2, Tile> Tiles { get; set; } = new();
 
 	private Dictionary<BiomeType, Biome> Biomes { get; set; }
-	private BiomeType[,] BiomeTable { get; set; } = new BiomeType[6, 6]
+	private BiomeType[,] BiomeTable { get; set; } = new BiomeType[7, 6]
 	{
 		// COLDEST              COLDER           COLD                      HOT                           HOTTER                       HOTTEST
-		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.Grassland,    BiomeType.Desert,              BiomeType.Desert,              BiomeType.Desert            }, // DRYEST
-		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.Grassland,    BiomeType.Desert,              BiomeType.Desert,              BiomeType.Desert            }, // DRYER
-		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.Woodland,     BiomeType.Woodland,            BiomeType.Savanna,             BiomeType.Savanna           }, // DRY
-		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.BorealForest, BiomeType.Woodland,            BiomeType.Savanna,             BiomeType.Savanna           }, // WET
-		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.BorealForest, BiomeType.SeasonalForest,      BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest}, // WETTER
-		{ BiomeType.Ice, BiomeType.Tundra, BiomeType.BorealForest, BiomeType.TemperateRainforest, BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest}  // WETTEST
+		{ BiomeType.Ice,   BiomeType.Tundra, BiomeType.Grassland,    BiomeType.Desert,              BiomeType.Desert,              BiomeType.Desert            }, // DRYEST
+		{ BiomeType.Ice,   BiomeType.Tundra, BiomeType.Grassland,    BiomeType.Desert,              BiomeType.Desert,              BiomeType.Desert            }, // DRYER
+		{ BiomeType.Ice,   BiomeType.Tundra, BiomeType.Woodland,     BiomeType.Woodland,            BiomeType.Savanna,             BiomeType.Savanna           }, // DRY
+		{ BiomeType.Ice,   BiomeType.Tundra, BiomeType.BorealForest, BiomeType.Woodland,            BiomeType.Savanna,             BiomeType.Savanna           }, // WET
+		{ BiomeType.Ice,   BiomeType.Tundra, BiomeType.BorealForest, BiomeType.SeasonalForest,      BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest}, // WETTER
+		{ BiomeType.Ice,   BiomeType.Tundra, BiomeType.BorealForest, BiomeType.TemperateRainforest, BiomeType.TropicalRainforest,  BiomeType.TropicalRainforest},  // WETTEST
+		{ BiomeType.Water, BiomeType.Water,  BiomeType.Water,        BiomeType.Water,               BiomeType.Water,               BiomeType.Water             }
 	};
 
 	public override void _Ready()
@@ -71,7 +74,8 @@ public partial class World : TileMap
 			{ BiomeType.TemperateRainforest, new BiomeTemperateRainforest(this) },
 			{ BiomeType.TropicalRainforest,  new BiomeTropicalRainForest(this)  },
 			{ BiomeType.Desert,              new BiomeDesert(this)              },
-			{ BiomeType.Savanna,             new BiomeSavanna(this)             }
+			{ BiomeType.Savanna,             new BiomeSavanna(this)             },
+			{ BiomeType.Water,               new BiomeWater(this)               }
 		};
 	}
 
@@ -106,7 +110,7 @@ public partial class World : TileMap
 		colors[v + 3] = color;
 	}
 
-	public void GenerateChunk(Vector2 chunkCoords, int size, BiomeType[,] biomeData)
+	public void GenerateChunk(Vector2 chunkCoords, int size, MoistureHeat[,] moistureHeatData)
 	{
 		var vertices = new Vector3[4 * size * size];
 		//var normals  = new Vector3[4 * size * size];
@@ -132,7 +136,7 @@ public partial class World : TileMap
 		{
 			for (int x = 0; x < size; x++)
 			{
-				Biomes[biomeData[x, z]].Generate(colors, v);
+				//Biomes[biomeData[x, z]].Generate(colors, v);
 
 				vertices    [v] = new Vector3(-s, -s, 0) + posVec3;
 				//normals     [v] = new Vector3( 0, 0,  s);
@@ -176,13 +180,50 @@ public partial class World : TileMap
 			{
 				// Increasing the fractal weighted strength to the maximum value (1) seems
 				// to get rid of any river loops, mini lakes and other artifacts
-				var noise = RiverNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z);
+				var noise1 = RiverNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z);
+				var noise2 = RiverSpreadNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z);
 
-				if (noise is > 0f and < 0.05f)
-					ColorTile(colors, v, Colors.CornflowerBlue);
+				var wetLand = new MoistureHeat
+					{
+						Heat = 1f,
+						Moisture = 0.75f
+					};
+
+				var water = new MoistureHeat
+					{
+						Heat = 1f,
+						Moisture = 1f
+					};
+
+				// ensure wetland is around river
+				if (noise1 is > 0.03f and < 0.07f)
+					moistureHeatData[x, z] = wetLand;
+
+				// add noisy wetland around river
+				if (noise2 is > 0.02f and < 0.08f)
+					moistureHeatData[x, z] = wetLand;
+
+				// generate river
+				if (noise1 is > 0.04f and < 0.06f)
+					moistureHeatData[x, z] = water;
 
 				v += 4;
 			}
+
+		v = 0;
+
+		for (int z = 0; z < size; z++)
+		{
+			for (int x = 0; x < size; x++)
+			{
+				var data = moistureHeatData[x, z];
+				var biome = GetBiome(data.Moisture, data.Heat);
+
+				Biomes[biome].Generate(colors, v);
+
+				v += 4;
+			}
+		}
 
 		var arrays = new Godot.Collections.Array();
 		arrays.Resize((int)Mesh.ArrayType.Max);
@@ -212,7 +253,7 @@ public partial class World : TileMap
 		return seed;
 	}
 
-	private BiomeType[,] GenerateBiomeData(Vector2 chunkCoords, WorldSettings settings)
+	private MoistureHeat[,] GenerateBiomeData(Vector2 chunkCoords, WorldSettings settings)
 	{
 		// GenerateBiomeData function is called in a loop
 		// Looking up all these values from Values dictionary seems unoptimal
@@ -264,10 +305,6 @@ public partial class World : TileMap
 							, 0, 1
 					);
 
-				// Generate the tiles
-				var biome = GetBiome(moistureValue, heatValue);
-				biomeData[x, z] = biome;
-
 				moistureHeatData[x, z] = new MoistureHeat
 				{
 					Moisture = moistureValue,
@@ -283,13 +320,13 @@ public partial class World : TileMap
 				Tiles[new Vector2(x, z)] = tile;*/
 			}
 
-		return biomeData;
+		return moistureHeatData;
 	}
 
 	private BiomeType GetBiome(float moistureNoise, float heatNoise)
 	{
-		var moistureType = moistureNoise.Remap(0, 1, 0, BiomeTable.GetLength(0) - 1);
-		var heatType = heatNoise.Remap(0, 1, 0, BiomeTable.GetLength(0) - 1);
+		var moistureType = moistureNoise.Remap(0, 1, 0, 6);
+		var heatType = heatNoise.Remap(0, 1, 0, 5);
 
 		return BiomeTable[(int)moistureType, (int)heatType];
 	}
