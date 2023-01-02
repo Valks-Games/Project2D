@@ -132,16 +132,18 @@ public partial class UIWorldSettings : Node
 			}
 		);
 
-		parent.AddChild(settingsMoisture);
+		/*parent.AddChild(settingsMoisture);
 		parent.AddChild(settingsMoistureDomainWarp);
 		parent.AddChild(settingsTemperature);
 		parent.AddChild(settingsTemperatureDomainWarp);
 		parent.AddChild(settingsGeneral);
-		parent.AddChild(CreateButton("Generate"));
+		parent.AddChild(CreateButton("Generate"));*/
 
-		//parent.AddChild(new UINoiseSettings("FastNoiseLite").Panel);
+		var noise = new UINoiseSettings();
 
-		//return;
+		parent.AddChild(noise.Create("Moisture"));
+
+		return;
 
 		// Immediately generate the world
 		World.Generate(WorldSettings);

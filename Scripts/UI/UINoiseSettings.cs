@@ -1,24 +1,83 @@
-﻿using System.Xml.Linq;
+﻿using FNL     = Godot.FastNoiseLite;
+using FNLFT   = Godot.FastNoiseLite.FractalTypeEnum;
+using FNLDWT  = Godot.FastNoiseLite.DomainWarpTypeEnum;
+using FNLDWFT = Godot.FastNoiseLite.DomainWarpFractalTypeEnum;
+using FNLCDF  = Godot.FastNoiseLite.CellularDistanceFunctionEnum;
+using FNLCRT  = Godot.FastNoiseLite.CellularReturnTypeEnum;
 
 namespace Project2D;
 
 public class UINoiseSettings
 {
-	public PanelContainer Panel { get; set; }
-	private VBoxContainer VBox { get; set; }
-	private FastNoiseLite Noise { get; set; } = new();
+	// Settings
+	public Settings           SettingsNoise      { get; set; } = new();
+	public FractalSettings    SettingsFractal    { get; set; } = new();
+	public DomainWarpSettings SettingsDomainWarp { get; set; } = new();
+	public CellularSettings   SettingsCellular   { get; set; } = new();
 
-	public UINoiseSettings(string name)
+	public  PanelContainer Panel { get; set; }
+	private VBoxContainer  VBox  { get; set; }
+	private FNL            Noise { get; set; } = new();
+
+	private TextureRect   ControlPreview                     { get; set; }
+	private HBoxContainer ControlNoiseType                   { get; set; }
+	private HBoxContainer ControlSeed                        { get; set; }
+	private HBoxContainer ControlFrequency                   { get; set; }
+	private Label         ControlLabelOffset                 { get; set; }
+	private HBoxContainer ControlOffset                      { get; set; }
+	private Label         ControlLabelFractal                { get; set; }
+	private HBoxContainer ControlFractalType                 { get; set; }
+	private HBoxContainer ControlFractalOctaves              { get; set; }
+	private HBoxContainer ControlFractalLacunarity           { get; set; }
+	private HBoxContainer ControlFractalGain                 { get; set; }
+	private HBoxContainer ControlFractalWeightedStrength     { get; set; }
+	private Label         ControlDomainWarpLabel             { get; set; }
+	private HBoxContainer ControlDomainEnabled               { get; set; }
+	private HBoxContainer ControlDomainWarpType              { get; set; }
+	private HBoxContainer ControlDomainWarpAmplitude         { get; set; }
+	private HBoxContainer ControlDomainWarpFrequency         { get; set; }
+	private HBoxContainer ControlDomainWarpFractalType       { get; set; }
+	private HBoxContainer ControlDomainWarpFractalOctaves    { get; set; }
+	private HBoxContainer ControlDomainWarpFractalLacunarity { get; set; }
+	private HBoxContainer ControlDomainWarpFractalGain       { get; set; }
+
+	private void PrepareNoise()
 	{
+		Noise.NoiseType                   = SettingsNoise.NoiseType;
+		Noise.Seed                        = SettingsNoise.Seed;
+		Noise.Frequency                   = SettingsNoise.Frequency;
+		Noise.Offset                      = new Vector3(SettingsNoise.Offset.x, SettingsNoise.Offset.y, Noise.Offset.z);
+		Noise.FractalType                 = SettingsFractal.Type;
+		Noise.FractalOctaves              = SettingsFractal.Octaves;
+		Noise.FractalLacunarity           = SettingsFractal.Lacunarity;
+		Noise.FractalGain                 = SettingsFractal.Gain;
+		Noise.FractalWeightedStrength     = SettingsFractal.WeightedStrength;
+		Noise.DomainWarpEnabled           = SettingsDomainWarp.Enabled;
+		Noise.DomainWarpType              = SettingsDomainWarp.Type;
+		Noise.DomainWarpAmplitude         = SettingsDomainWarp.Amplitude;
+		Noise.DomainWarpFrequency         = SettingsDomainWarp.Frequency;
+		Noise.DomainWarpFractalType       = SettingsDomainWarp.FractalType;
+		Noise.DomainWarpFractalOctaves    = SettingsDomainWarp.FractalOctaves;
+		Noise.DomainWarpFractalLacunarity = SettingsDomainWarp.FractalLacunarity;
+		Noise.DomainWarpFractalGain       = SettingsDomainWarp.FractalGain;
+		Noise.CellularDistanceFunction    = SettingsCellular.DistanceFunction;
+		Noise.CellularJitter              = SettingsCellular.Jitter;
+		Noise.CellularReturnType          = SettingsCellular.ReturnTypeFunction;
+	}
+
+	public void HideDomainWarp()
+	{
+
+	}
+
+	public PanelContainer Create(string name)
+	{
+		PrepareNoise();
+
+		// Prepare PanelContainer
 		Panel = new PanelContainer();
 		var marginContainer = new MarginContainer();
 		VBox = new VBoxContainer();
-
-		if (!string.IsNullOrWhiteSpace(name))
-			VBox.AddChild(new Label {
-				Text = name.AddSpaceBeforeEachCapital(),
-				HorizontalAlignment = HorizontalAlignment.Center
-			});
 
 		foreach (var direction in new string[] { "left", "right", "up", "down" })
 			marginContainer.AddThemeConstantOverride($"margin_{direction}", 5);
@@ -26,20 +85,66 @@ public class UINoiseSettings
 		Panel.AddChild(marginContainer);
 		marginContainer.AddChild(VBox);
 
-		var textureRect = new TextureRect();
+		// SETTINGS
+		CreateUI(name);
+
+		return Panel;
+	}
+
+	private void CreateUI(string name)
+	{
+		if (!string.IsNullOrWhiteSpace(name))
+			VBox.AddChild(new Label {
+				Text = name.AddSpaceBeforeEachCapital(),
+				HorizontalAlignment = HorizontalAlignment.Center
+			});
+
+		CreateSettings();
+		CreateFractalSettings();
+		CreateCellularSettings();
+		CreateDomainWarpSettings();
+	}
+
+	private void CreateSettings()
+	{
+		CreatePreview();
+		CreateNoiseType();
+		CreateSeed();
+		CreateFrequency();
+		CreateOffset();
+	}
+
+	private void CreatePreview()
+	{
+		// Preview
+		ControlPreview = new TextureRect();
 		var noiseTexure = new NoiseTexture2D();
 		noiseTexure.Noise = Noise;
 		noiseTexure.Width = 400;
 		noiseTexure.Height = 200;
-		textureRect.Texture = noiseTexure;
-		textureRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered;
+		ControlPreview.Texture = noiseTexure;
+		ControlPreview.StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered;
 
-		VBox.AddChild(textureRect);
+		VBox.AddChild(ControlPreview);
+	}
 
-		HBox("Noise Type", OptionButton(Enum.GetValues(typeof(FastNoiseLite.NoiseTypeEnum)), (item) => 
-			Noise.NoiseType = (FastNoiseLite.NoiseTypeEnum)item));
+	private void CreateNoiseType()
+	{
+		// Noise Type
+		var optionButtonNoiseType = OptionButton(Enum.GetValues(typeof(FNL.NoiseTypeEnum)), (item) => 
+			Noise.NoiseType = (FNL.NoiseTypeEnum)item);
 
-		HBox("Seed", LineEdit((text) => 
+		optionButtonNoiseType.Selected = (int)SettingsNoise.NoiseType;
+
+		ControlNoiseType = HBox("Noise Type", optionButtonNoiseType);
+
+		VBox.AddChild(ControlNoiseType);
+	}
+
+	private void CreateSeed()
+	{
+		// Seed
+		var lineEditSeed = LineEdit((text) => 
 		{
 			var seed = 0;
 
@@ -47,49 +152,108 @@ public class UINoiseSettings
 				seed += c;
 
 			Noise.Seed = seed;
-		}));
+		});
 
-		HBox("Frequency", HSlider(new SettingsSlider { 
+		lineEditSeed.Text = $"{SettingsNoise.Seed}";
+
+		ControlSeed = HBox("Seed", lineEditSeed);
+
+		VBox.AddChild(ControlSeed);
+	}
+
+	private void CreateFrequency()
+	{
+		// Frequency
+		var hsliderFrequency = HSlider(new SettingsSlider { 
 			MinValue = 0.001f,
 			MaxValue = 0.05f,
 			Step = 0.001f
-		}, (v) => Noise.Frequency = (float)v));
+		}, (v) => Noise.Frequency = (float)v);
 
-		VBox.AddChild(new Label { Text = "Offset" });
+		hsliderFrequency.Value = SettingsNoise.Frequency;
 
-		var hbox = new HBoxContainer();
+		ControlFrequency = HBox("Frequency", hsliderFrequency);
+
+		VBox.AddChild(ControlFrequency);
+	}
+
+	private void CreateOffset()
+	{
+		// Offset Label
+		ControlLabelOffset = new Label { Text = "Offset" };
+
+		VBox.AddChild(ControlLabelOffset);
+
+		// Offset
+		ControlOffset = new HBoxContainer();
 
 		var offsetRange = 1000;
 
-		hbox.AddChild(HSlider(new SettingsSlider { 
+		// OffsetX
+		var hsliderOffsetX = HSlider(new SettingsSlider { 
 			MinValue = -offsetRange,
 			MaxValue = offsetRange,
 			Step = 0.001f
 		}, (v) => {
 			Noise.Offset = new Vector3((float)v, Noise.Offset.y, Noise.Offset.z);
-		}));
+		});
 
-		hbox.AddChild(HSlider(new SettingsSlider { 
+		hsliderOffsetX.Value = SettingsNoise.Offset.x;
+
+		ControlOffset.AddChild(hsliderOffsetX);
+
+		// OffsetY
+		var hsliderOffsetY = HSlider(new SettingsSlider { 
 			MinValue = -offsetRange,
 			MaxValue = offsetRange,
 			Step = 0.001f
 		}, (v) => {
 			Noise.Offset = new Vector3(Noise.Offset.x, (float)v, Noise.Offset.z);
-		}));
-
-		VBox.AddChild(hbox);
-
-		VBox.AddChild(new Label {
-			Text = "Fractal",
-			HorizontalAlignment = HorizontalAlignment.Center
 		});
 
-		HBox("Type", OptionButton(Enum.GetValues(typeof(FastNoiseLite.FractalTypeEnum)), (item) => 
-		{
-			Noise.FractalType = (FastNoiseLite.FractalTypeEnum)item;
-		}));
+		hsliderOffsetY.Value = SettingsNoise.Offset.y;
 
-		HBox("Octaves", HSlider(new SettingsSlider
+		ControlOffset.AddChild(hsliderOffsetY);
+
+		VBox.AddChild(ControlOffset);
+	}
+
+	private void CreateFractalSettings()
+	{
+		// Fractal Label
+		ControlLabelFractal = new Label {
+			Text = "Fractal",
+			HorizontalAlignment = HorizontalAlignment.Center
+		};
+
+		VBox.AddChild(ControlLabelFractal);
+
+		CreateFractalType();
+		CreateFractalOctaves();
+		CreateFractalLacunarity();
+		CreateFractalGain();
+		CreateFractalWeightedStrength();
+	}
+
+	private void CreateFractalType()
+	{
+		// Fractal Type
+		var optionButtonFractalType = OptionButton(Enum.GetValues(typeof(FNLFT)), (item) => 
+		{
+			Noise.FractalType = (FNLFT)item;
+		});
+
+		optionButtonFractalType.Selected = (int)SettingsFractal.Type;
+
+		ControlFractalType = HBox("Type", optionButtonFractalType);
+
+		VBox.AddChild(ControlFractalType);
+	}
+
+	private void CreateFractalOctaves()
+	{
+		// Fractal Octaves
+		var hsliderFractalOctaves = HSlider(new SettingsSlider
 		{
 			MinValue = 1,
 			MaxValue = 10,
@@ -98,9 +262,19 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.FractalOctaves = (int)v;
-		}));
+		});
 
-		HBox("Lacunarity", HSlider(new SettingsSlider
+		hsliderFractalOctaves.Value = SettingsFractal.Octaves;
+
+		ControlFractalOctaves = HBox("Octaves", hsliderFractalOctaves);
+
+		VBox.AddChild(ControlFractalOctaves);
+	}
+
+	private void CreateFractalLacunarity()
+	{
+		// Fractal Lacunarity
+		var hsliderFractalLacunarity = HSlider(new SettingsSlider
 		{
 			MinValue = 0,
 			MaxValue = 10,
@@ -109,9 +283,19 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.FractalLacunarity = (float)v;
-		}));
+		});
 
-		HBox("Gain", HSlider(new SettingsSlider
+		hsliderFractalLacunarity.Value = SettingsFractal.Lacunarity;
+
+		ControlFractalLacunarity = HBox("Lacunarity", hsliderFractalLacunarity);
+
+		VBox.AddChild(ControlFractalLacunarity);
+	}
+
+	private void CreateFractalGain()
+	{
+		// Fractal Gain
+		var hsliderFractalGain = HSlider(new SettingsSlider
 		{
 			MinValue = 0,
 			MaxValue = 10,
@@ -120,9 +304,19 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.FractalGain = (float)v;
-		}));
+		});
 
-		HBox("Weighted Strength", HSlider(new SettingsSlider
+		hsliderFractalGain.Value = SettingsFractal.Gain;
+
+		ControlFractalGain = HBox("Gain", hsliderFractalGain);
+
+		VBox.AddChild(ControlFractalGain);
+	}
+
+	private void CreateFractalWeightedStrength()
+	{
+		// Fractal Weighted Strength
+		var hsliderFractalWeightedStrength = HSlider(new SettingsSlider
 		{
 			MinValue = 0,
 			MaxValue = 1,
@@ -131,23 +325,87 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.FractalWeightedStrength = (float)v;
-		}));
-
-		VBox.AddChild(new Label {
-			Text = "Domain Warp",
-			HorizontalAlignment = HorizontalAlignment.Center
 		});
 
+		hsliderFractalWeightedStrength.Value = SettingsFractal.WeightedStrength;
+
+		ControlFractalWeightedStrength = HBox("Weighted Strength", hsliderFractalWeightedStrength);
+
+		VBox.AddChild(ControlFractalWeightedStrength);
+	}
+
+	private void CreateCellularSettings()
+	{
+		CreateCellularDistanceFunction();
+		CreateCellularJitter();
+		CreateCellularReturnTypeFunction();
+	}
+
+	private void CreateCellularDistanceFunction()
+	{
+
+	}
+
+	private void CreateCellularJitter()
+	{
+
+	}
+
+	private void CreateCellularReturnTypeFunction()
+	{
+
+	}
+
+	private void CreateDomainWarpSettings()
+	{
+		// Domain Warp Label
+		ControlDomainWarpLabel = new Label {
+			Text = "Domain Warp",
+			HorizontalAlignment = HorizontalAlignment.Center
+		};
+
+		VBox.AddChild(ControlDomainWarpLabel);
+
+		CreateDomainWarpEnabled();
+		CreateDomainWarpType();
+		CreateDomainWarpAmplitude();
+		CreateDomainWarpFrequency();
+		CreateDomainWarpFractalType();
+		CreateDomainWarpFractalOctaves();
+		CreateDomainWarpFractalLacunarity();
+		CreateDomainWarpFractalGain();
+	}
+
+	private void CreateDomainWarpEnabled()
+	{
+		// Domain Enabled
 		var checkbox = new CheckBox();
+		checkbox.ButtonPressed = SettingsDomainWarp.Enabled;
 		checkbox.Toggled += (v) => Noise.DomainWarpEnabled = v;
-		HBox("Enabled", checkbox);
+		ControlDomainEnabled = HBox("Enabled", checkbox);
 
-		HBox("Type", OptionButton(Enum.GetValues(typeof(FastNoiseLite.DomainWarpTypeEnum)), (item) => 
+		VBox.AddChild(ControlDomainEnabled);
+	}
+
+	private void CreateDomainWarpType()
+	{
+		// Domain Type
+		var optionButtonDomainType = OptionButton(Enum.GetValues(typeof(FNLDWT)), (item) => 
 		{
-			Noise.DomainWarpType = (FastNoiseLite.DomainWarpTypeEnum)item;
-		}));
+			Noise.DomainWarpType = (FNLDWT)item;
+		});
 
-		HBox("Amplitude", HSlider(new SettingsSlider
+		optionButtonDomainType.Selected = (int)SettingsDomainWarp.Type;
+
+		ControlDomainWarpType = HBox("Type", optionButtonDomainType);
+
+		VBox.AddChild(ControlDomainWarpType);
+	}
+
+	private void CreateDomainWarpAmplitude()
+	{
+		// Domain Amplitude
+		var hsliderDomainAmplitude = HSlider(new SettingsSlider
 		{
 			MinValue = 0,
 			MaxValue = 100,
@@ -156,23 +414,53 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.DomainWarpAmplitude = (float)v;
-		}));
+		});
 
-		HBox("Frequency", HSlider(new SettingsSlider { 
+		hsliderDomainAmplitude.Value = SettingsDomainWarp.Amplitude;
+
+		ControlDomainWarpAmplitude = HBox("Amplitude", hsliderDomainAmplitude);
+
+		VBox.AddChild(ControlDomainWarpAmplitude);
+	}
+
+	private void CreateDomainWarpFrequency()
+	{
+		// Domain Frequency
+		var hsliderDomainFrequency = HSlider(new SettingsSlider { 
 			MinValue = 0,
 			MaxValue = 1,
 			Step = 0.001f
 		}, (v) =>
 		{
 			Noise.DomainWarpFrequency = (float)v;
-		}));
+		});
 
-		HBox("Fractal Type", OptionButton(Enum.GetValues(typeof(FastNoiseLite.DomainWarpFractalTypeEnum)), (item) => 
+		hsliderDomainFrequency.Value = SettingsDomainWarp.Frequency;
+
+		ControlDomainWarpFrequency = HBox("Frequency", hsliderDomainFrequency);
+
+		VBox.AddChild(ControlDomainWarpFrequency);
+	}
+
+	private void CreateDomainWarpFractalType()
+	{
+		// Domain Warp Fractal Type
+		var optionButtonDomainWarpFractalType = OptionButton(Enum.GetValues(typeof(FNLDWFT)), (item) => 
 		{
-			Noise.DomainWarpFractalType = (FastNoiseLite.DomainWarpFractalTypeEnum)item;
-		}));
+			Noise.DomainWarpFractalType = (FNLDWFT)item;
+		});
 
-		HBox("Fractal Octaves", HSlider(new SettingsSlider
+		optionButtonDomainWarpFractalType.Selected = (int)SettingsDomainWarp.FractalType;
+
+		ControlDomainWarpFractalType = HBox("Fractal Type", optionButtonDomainWarpFractalType);
+
+		VBox.AddChild(ControlDomainWarpFractalType);
+	}
+
+	private void CreateDomainWarpFractalOctaves()
+	{
+		// Domain Warp Fractal Octaves
+		var hsliderDomainWarpFractalOctaves = HSlider(new SettingsSlider
 		{
 			MinValue = 1,
 			MaxValue = 10,
@@ -181,9 +469,19 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.DomainWarpFractalOctaves = (int)v;
-		}));
+		});
 
-		HBox("Fractal Lacunarity", HSlider(new SettingsSlider
+		hsliderDomainWarpFractalOctaves.Value = SettingsDomainWarp.FractalOctaves;
+
+		ControlDomainWarpFractalOctaves = HBox("Fractal Octaves", hsliderDomainWarpFractalOctaves);
+
+		VBox.AddChild(ControlDomainWarpFractalOctaves);
+	}
+
+	private void CreateDomainWarpFractalLacunarity()
+	{
+		// Domain Warp Fractal Lacunarity
+		var hsliderDomainWarpFractalLacunarity = HSlider(new SettingsSlider
 		{
 			MinValue = 0,
 			MaxValue = 10,
@@ -192,9 +490,19 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.DomainWarpFractalLacunarity = (float)v;
-		}));
+		});
 
-		HBox("Fractal Gain", HSlider(new SettingsSlider
+		hsliderDomainWarpFractalLacunarity.Value = SettingsDomainWarp.FractalLacunarity;
+
+		ControlDomainWarpFractalLacunarity = HBox("Fractal Lacunarity", hsliderDomainWarpFractalLacunarity);
+
+		VBox.AddChild(ControlDomainWarpFractalLacunarity);
+	}
+
+	private void CreateDomainWarpFractalGain()
+	{
+		// Domain Warp Fractal Gain
+		var hsliderDomainWarpFractalGain = HSlider(new SettingsSlider
 		{
 			MinValue = 0,
 			MaxValue = 10,
@@ -203,10 +511,16 @@ public class UINoiseSettings
 		}, (v) =>
 		{
 			Noise.DomainWarpFractalGain = (float)v;
-		}));
+		});
+
+		hsliderDomainWarpFractalGain.Value = SettingsDomainWarp.FractalGain;
+
+		ControlDomainWarpFractalGain = HBox("Fractal Gain", hsliderDomainWarpFractalGain);
+
+		VBox.AddChild(ControlDomainWarpFractalGain);
 	}
 
-	private void HBox(string text, Node child2)
+	private HBoxContainer HBox(string text, Node child2)
 	{
 		var hbox = new HBoxContainer();
 		hbox.AddChild(new Label { 
@@ -214,7 +528,7 @@ public class UINoiseSettings
 			Text = text 
 		});
 		hbox.AddChild(child2);
-		VBox.AddChild(hbox);
+		return hbox;
 	}
 
 	private HSlider HSlider(SettingsSlider settings, Action<double> valueChanged)
@@ -256,5 +570,41 @@ public class UINoiseSettings
 		optionButton.ItemSelected += (item) => itemSelected(item);
 
 		return optionButton;
+	}
+
+	public class Settings
+	{
+		public FNL.NoiseTypeEnum NoiseType { get; set; } = FNL.NoiseTypeEnum.SimplexSmooth;
+		public int               Seed      { get; set; }
+		public float             Frequency { get; set; } = 0.05f;
+		public Vector2           Offset    { get; set; }
+	}
+
+	public class FractalSettings
+	{
+		public FNLFT Type             { get; set; } = FNLFT.None;
+		public int   Octaves          { get; set; } = 5;
+		public float Lacunarity       { get; set; } = 2;
+		public float Gain             { get; set; } = 0.5f;
+		public float WeightedStrength { get; set; }
+	}
+
+	public class DomainWarpSettings
+	{
+		public bool    Enabled           { get; set; }
+		public FNLDWT  Type              { get; set; } = FNLDWT.Simplex;
+		public float   Amplitude         { get; set; } = 30;
+		public float   Frequency         { get; set; } = 0.05f;
+		public FNLDWFT FractalType       { get; set; } = FNLDWFT.Progressive;
+		public int     FractalOctaves    { get; set; } = 5;
+		public float   FractalLacunarity { get; set; } = 6;
+		public float   FractalGain       { get; set; }
+	}
+
+	public class CellularSettings
+	{
+		public FNLCDF DistanceFunction   { get; set; } = FNLCDF.Euclidean;
+		public float Jitter              { get; set; } = 0.45f;
+		public FNLCRT ReturnTypeFunction { get; set; } = FNLCRT.Distance;
 	}
 }
