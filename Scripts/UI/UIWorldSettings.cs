@@ -139,6 +139,10 @@ public partial class UIWorldSettings : Node
 		parent.AddChild(settingsGeneral);
 		parent.AddChild(CreateButton("Generate"));
 
+		//parent.AddChild(new UINoiseSettings("FastNoiseLite").Panel);
+
+		//return;
+
 		// Immediately generate the world
 		World.Generate(WorldSettings);
 	}

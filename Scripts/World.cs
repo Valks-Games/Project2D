@@ -32,12 +32,6 @@ public class MoistureHeat
 	public float Heat { get; set; }
 }
 
-public class Pos
-{
-	public int X { get; set; }
-	public int Z { get; set; }
-}
-
 public partial class World : TileMap
 {
 	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Simplex1;
