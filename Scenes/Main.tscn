@@ -1,39 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://bxjlhk1v4bft6"]
+[gd_scene load_steps=4 format=3 uid="uid://bxjlhk1v4bft6"]
 
-[ext_resource type="Texture2D" uid="uid://dredgu5n4wqee" path="res://Art/tiles.png" id="1_3te00"]
 [ext_resource type="Script" path="res://Scripts/World.cs" id="2_gm064"]
 [ext_resource type="Script" path="res://Scripts/CameraController.cs" id="3_vbehi"]
 [ext_resource type="Script" path="res://Scripts/UI/UIWorldSettings.cs" id="4_pbrw8"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ftr1a"]
-texture = ExtResource("1_3te00")
-texture_region_size = Vector2i(64, 64)
-0:0/0 = 0
-1:0/0 = 0
-2:0/0 = 0
-3:0/0 = 0
-4:0/0 = 0
-5:0/0 = 0
-6:0/0 = 0
-7:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_xxfqu"]
-tile_size = Vector2i(64, 64)
-sources/0 = SubResource("TileSetAtlasSource_ftr1a")
-
 [node name="Node2D" type="Node2D"]
 
-[node name="TileMap" type="TileMap" parent="."]
-tile_set = SubResource("TileSet_xxfqu")
-format = 2
-layer_0/tile_data = PackedInt32Array(131075, 131072, 0, 131076, 65536, 0, 196612, 131072, 0, 262148, 458752, 0, 262147, 131072, 0, 196613, 131072, 0, 196614, 131072, 0, 196615, 131072, 0, 131079, 65536, 0, 65543, 131072, 0, 262149, 458752, 0, 262150, 458752, 0, 262151, 458752, 0, 262152, 131072, 0, 196616, 131072, 0, 131078, 131072, 0, 131077, 196608, 0, 65541, 131072, 0, 65540, 131072, 0, 65539, 131072, 0, 196611, 131072, 0, 65542, 131072, 0, 65544, 131072, 0, 131080, 196608, 0, 327683, 131072, 0, 327684, 458752, 0, 327685, 458752, 0, 327686, 458752, 0, 327687, 458752, 0, 327688, 131072, 0, 262146, 131072, 0, 196610, 131072, 0, 131074, 131072, 0, 131081, 131072, 0, 196617, 131072, 0, 262153, 131072, 0, 393223, 131072, 0, 393222, 131072, 0, 393221, 131072, 0, 393220, 131072, 0, 393224, 131072, 0, 393219, 131072, 0, 131073, 458752, 0, 65538, 458752, 0, 3, 458752, 0, 65537, 393216, 0, 2, 393216, 0, 131072, 393216, 0, -65533, 393216, 0, 196607, 65536, 1, 65536, 65536, 1, 1, 65536, 1, -65534, 65536, 1, -131069, 65536, 1, 131071, 458752, 0, 0, 458752, 0, -65535, 458752, 0, -131070, 458752, 0)
+[node name="TileMap" type="Node2D" parent="."]
 script = ExtResource("2_gm064")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
-zoom = Vector2(0.01, 0.01)
+zoom = Vector2(0.05, 0.05)
 position_smoothing_enabled = true
 script = ExtResource("3_vbehi")
 
@@ -51,14 +29,11 @@ grow_horizontal = 0
 grow_vertical = 0
 script = ExtResource("4_pbrw8")
 NodePathWorld = NodePath("../../TileMap")
-NodePathVBox = NodePath("MarginContainer/VBoxContainer")
+NodePathTabContainer = NodePath("VBoxContainer/TabContainer")
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIWorldSettings"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/separation = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIWorldSettings/MarginContainer"]
+[node name="TabContainer" type="TabContainer" parent="CanvasLayer/UIWorldSettings/VBoxContainer"]
 layout_mode = 2
