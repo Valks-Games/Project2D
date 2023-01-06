@@ -32,7 +32,7 @@ public class MoistureHeat
 	public float Heat { get; set; }
 }
 
-public partial class World : TileMap
+public partial class World : Node
 {
 	private FastNoiseLite HeatNoise { get; set; } = NoiseTextures.Simplex1;
 	private FastNoiseLite MoistureNoise { get; set; } = NoiseTextures.Simplex2;
@@ -89,23 +89,29 @@ public partial class World : TileMap
 
 		var worldSeed = CalculateSeed((string)settings.Values["Seed"]);
 
-		MoistureNoise.Frequency = (float)settings.Values["MoistureFrequency"];
+		/*MoistureNoise.Frequency = (float)settings.Values["MoistureFrequency"];
 		MoistureNoise.FractalOctaves = Convert.ToInt32(settings.Values["MoistureOctaves"]);
 		MoistureNoise.Seed = worldSeed;
 		MoistureNoise.DomainWarpEnabled = true;
-		MoistureNoise.DomainWarpAmplitude = (float)settings.Values["MoistureDomainWarpAmplitude"];
+		MoistureNoise.DomainWarpAmplitude = (float)settings.Values["MoistureDomainWarpAmplitude"];*/
 
-		HeatNoise.Frequency = (float)settings.Values["TemperatureFrequency"];
+		MoistureNoise = WorldSettings.MoistureNoise;
+
+		/*HeatNoise.Frequency = (float)settings.Values["TemperatureFrequency"];
 		HeatNoise.FractalOctaves = Convert.ToInt32(settings.Values["TemperatureOctaves"]);
 		HeatNoise.Seed = worldSeed + 1000;
 		HeatNoise.DomainWarpEnabled = true;
-		HeatNoise.DomainWarpAmplitude = (float)settings.Values["TemperatureDomainWarpAmplitude"];
+		HeatNoise.DomainWarpAmplitude = (float)settings.Values["TemperatureDomainWarpAmplitude"];*/
+
+		HeatNoise = WorldSettings.TemperatureNoise;
+
 
 		OceanNoise.Seed = worldSeed;
 		OceanSpreadNoise.Seed = worldSeed;
 		RiverNoise.Seed = worldSeed;
 		RiverSpreadNoise.Seed = worldSeed;
 
+		RiverNoise = WorldSettings.RiverNoise;
 		for (int x = -spawnSize; x <= spawnSize; x++)
 			for (int z = -spawnSize; z <= spawnSize; z++)
 				GenerateChunk(new Vector2(x, z), chunkSize, GenerateBiomeData(new Vector2(x, z), settings));

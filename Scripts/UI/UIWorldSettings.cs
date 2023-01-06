@@ -1,11 +1,9 @@
-using Newtonsoft.Json.Linq;
-
 namespace Project2D;
 
-public partial class UIWorldSettings : Node
+public partial class UIWorldSettings : Control
 {
 	[Export] public NodePath NodePathWorld { get; set; }
-	[Export] public NodePath NodePathVBox { get; set; }
+	[Export] public NodePath NodePathTabContainer { get; set; }
 
 	private World World { get; set; }
 	private WorldSettings WorldSettings { get; set; } = new();
@@ -14,7 +12,7 @@ public partial class UIWorldSettings : Node
 	{
 		World = GetNode<World>(NodePathWorld);
 
-		var parent = GetNode<VBoxContainer>(NodePathVBox);
+		var parent = GetNode<TabContainer>(NodePathTabContainer);
 
 		var settingsMoisture = CreateSettingsSection("Moisture", 
 				new SettingsSlider
@@ -123,12 +121,12 @@ public partial class UIWorldSettings : Node
 			new SettingsLineEdit
 			{
 				Name = "ChunkSize",
-				Value = "100"
+				Value = "75"
 			},
 			new SettingsLineEdit
 			{
 				Name = "SpawnSize",
-				Value = "4"
+				Value = "1"
 			}
 		);
 
@@ -137,13 +135,69 @@ public partial class UIWorldSettings : Node
 		parent.AddChild(settingsTemperature);
 		parent.AddChild(settingsTemperatureDomainWarp);
 		parent.AddChild(settingsGeneral);
-		parent.AddChild(CreateButton("Generate"));*/
+		*/
 
-		var noise = new UINoiseSettings();
+		var temperature = new UINoiseSettings
+		{
+			Noise = new FastNoiseLite
+			{
+				Frequency = 0.005f
+			}
+		};
 
-		parent.AddChild(noise.Create("Moisture"));
+		parent.AddChild(temperature.Create("Temperature"));
 
-		return;
+		temperature.SettingsChangedEvent += (settings, noiseArgs) => 
+		{
+			WorldSettings.TemperatureNoise = noiseArgs.Noise;
+
+			World.Generate(WorldSettings);	
+		};
+
+		var moisture = new UINoiseSettings
+		{
+			Noise = new FastNoiseLite
+			{
+				Frequency = 0.005f
+			}
+		};
+
+		parent.AddChild(moisture.Create("Moisture"));
+
+		moisture.SettingsChangedEvent += (settings, noiseArgs) =>
+		{
+			WorldSettings.MoistureNoise = noiseArgs.Noise;
+
+			World.Generate(WorldSettings);	
+		};
+
+		var rivers = new UINoiseSettings
+		{
+			Noise = new FastNoiseLite
+			{
+				FractalType = FastNoiseLite.FractalTypeEnum.Fbm,
+				FractalOctaves = 4,
+				FractalLacunarity = 1,
+				Frequency = 0.001f
+			}
+		};
+
+		parent.AddChild(rivers.Create("Rivers"));
+
+		rivers.SettingsChangedEvent += (settings, noiseArgs) =>
+		{
+			WorldSettings.RiverNoise = noiseArgs.Noise;
+
+			if ((bool)WorldSettings.Values["UpdateOnEdit"])
+				World.Generate(WorldSettings);	
+		};
+
+		WorldSettings.TemperatureNoise = temperature.Noise;
+		WorldSettings.MoistureNoise = moisture.Noise;
+		WorldSettings.RiverNoise = rivers.Noise;
+
+		parent.GetParent().AddChild(settingsGeneral);
+		parent.GetParent().AddChild(CreateButton("Generate"));
 
 		// Immediately generate the world
 		World.Generate(WorldSettings);
@@ -278,6 +332,9 @@ public partial class UIWorldSettings : Node
 public class WorldSettings
 {
 	public Dictionary<string, object> Values { get; set; } = new();
+	public FastNoiseLite TemperatureNoise { get; set; } = new();
+	public FastNoiseLite MoistureNoise { get; set; } = new();
+	public FastNoiseLite RiverNoise { get; set; } = new();
 }
 
 public class Settings
