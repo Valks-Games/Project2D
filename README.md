@@ -4,7 +4,7 @@
 
 Playing around with biome generation, might become something more, who knows.
 
-Contact me on Discord `valk#9904` for any questions you may have.
+Contact me on Discord `va#9904` for any questions you may have.
 
 ## Roadmap
 - [ ] chunks generate when camera moves around
