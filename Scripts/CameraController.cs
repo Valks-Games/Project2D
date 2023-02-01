@@ -17,7 +17,7 @@ public partial class CameraController : Camera2D
 	public override void _Ready()
 	{
 		// Set the initial target zoom value on game start
-		TargetZoom = Zoom.x;
+		TargetZoom = Zoom.X;
 	}
 
 	public override void _Process(double delta)
@@ -28,19 +28,19 @@ public partial class CameraController : Camera2D
 		var velocity = Vector2.Zero;
 
 		if (Input.IsActionPressed("left"))
-			velocity.x -= 1;
+			velocity.X -= 1;
 
 		if (Input.IsActionPressed("right"))
-			velocity.x += 1;
+			velocity.X += 1;
 
 		if (Input.IsActionPressed("up"))
-			velocity.y -= 1;
+			velocity.Y -= 1;
 
 		if (Input.IsActionPressed("down"))
-			velocity.y += 1;
+			velocity.Y += 1;
 		
 		if (Panning)
-			Position = InitialPanPosition - (GetViewport().GetMousePosition() / Zoom.x);
+			Position = InitialPanPosition - (GetViewport().GetMousePosition() / Zoom.X);
 
 		// Arrow keys and WASD movement are added onto the panning position changes
 		var speed = 50;
@@ -50,7 +50,7 @@ public partial class CameraController : Camera2D
 	public override void _PhysicsProcess(double delta)
 	{
 		// Prevent zoom from becoming too fast when zooming out
-		ZoomIncrement = ZoomIncrementDefault * Zoom.x;
+		ZoomIncrement = ZoomIncrementDefault * Zoom.X;
 
 		// Lerp to the target zoom for a smooth effect
 		Zoom = Zoom.Lerp(new Vector2(TargetZoom, TargetZoom), SmoothFactor);
@@ -79,7 +79,7 @@ public partial class CameraController : Camera2D
 		if (@event.IsPressed())
 		{
 			// Save the intial position
-			InitialPanPosition = Position + (GetViewport().GetMousePosition() / Zoom.x);
+			InitialPanPosition = Position + (GetViewport().GetMousePosition() / Zoom.X);
 			Panning = true;
 		}
 		else

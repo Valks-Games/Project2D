@@ -244,8 +244,8 @@ public partial class UIWorldSettings : Control
 			MaxValue = settings.MaxValue,
 			Step = settings.Step,
 			Value = settings.Value,
-			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
-			SizeFlagsVertical = (int)Control.SizeFlags.Fill
+			SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+			SizeFlagsVertical = Control.SizeFlags.Fill
 		};
 
 		WorldSettings.Values[name + settings.Name] = settings.Value;
@@ -268,7 +268,7 @@ public partial class UIWorldSettings : Control
 		var lineEdit = new LineEdit
 		{
 			Text = settings.Value,
-			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
+			SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
 		};
 
 		WorldSettings.Values[name + settings.Name] = settings.Value;

@@ -11,8 +11,8 @@ public static class UIElements
 			MaxValue = settings.MaxValue,
 			Step = settings.Step,
 			Value = settings.Value,
-			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
-			SizeFlagsVertical = (int)Control.SizeFlags.Fill
+			SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+			SizeFlagsVertical = Control.SizeFlags.Fill
 		};
 
 		action(slider, settings);
@@ -28,7 +28,7 @@ public static class UIElements
 		var lineEdit = new LineEdit
 		{
 			Text = settings.Value,
-			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
+			SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
 		};
 
 		action(lineEdit, settings);

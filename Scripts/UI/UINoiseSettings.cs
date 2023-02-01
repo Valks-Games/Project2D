@@ -115,7 +115,8 @@ public class UINoiseSettings
 		{
 			Texture = noiseTexure,
 			StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
-			IgnoreTextureSize = true,
+			//IgnoreTextureSize = true, // This is no longer a thing in Godot 4 beta 17
+			// Hopefully someone can figure out what the new setting is for this
 			CustomMinimumSize = new Vector2(0, 100)
 		};
 
@@ -186,8 +187,8 @@ public class UINoiseSettings
 			MinValue = -offsetRange,
 			MaxValue = offsetRange,
 			Step = 0.001f
-		}, Noise.Offset.x, (v) => {
-			Noise.Offset = new Vector3((float)v, Noise.Offset.y, Noise.Offset.z);
+		}, Noise.Offset.X, (v) => {
+			Noise.Offset = new Vector3((float)v, Noise.Offset.Y, Noise.Offset.Z);
 		}, false);
 
 		ControlOffset.AddChild(hsliderOffsetX);
@@ -197,8 +198,8 @@ public class UINoiseSettings
 			MinValue = -offsetRange,
 			MaxValue = offsetRange,
 			Step = 0.001f
-		}, Noise.Offset.y, (v) => {
-			Noise.Offset = new Vector3(Noise.Offset.x, (float)v, Noise.Offset.z);
+		}, Noise.Offset.Y, (v) => {
+			Noise.Offset = new Vector3(Noise.Offset.X, (float)v, Noise.Offset.Z);
 		}, false);
 
 		ControlOffset.AddChild(hsliderOffsetY);
@@ -508,7 +509,7 @@ public class UINoiseSettings
 	private HBoxContainer HSlider(SettingsSlider settings, double initialValue, Action<double> valueChanged, bool showLineEditValue = true)
 	{
 		var hbox = new HBoxContainer();
-		hbox.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
+		hbox.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 
 		var slider = new HSlider
 		{
@@ -516,8 +517,8 @@ public class UINoiseSettings
 			MaxValue = settings.MaxValue,
 			Step = settings.Step,
 			Value = settings.Value,
-			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
-			SizeFlagsVertical = (int)Control.SizeFlags.Fill
+			SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+			SizeFlagsVertical = Control.SizeFlags.Fill
 		};
 
 		LineEdit lineEdit = null;
@@ -551,7 +552,7 @@ public class UINoiseSettings
 	private LineEdit LineEdit(Action<string> textChanged)
 	{
 		var lineEdit = new LineEdit {
-			SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill,
+			SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
 		};
 
 		lineEdit.TextChanged += (text) => 
@@ -566,7 +567,7 @@ public class UINoiseSettings
 	private OptionButton OptionButton(Array items, Action<long> itemSelected)
 	{
 		var optionButton = new OptionButton();
-		optionButton.SizeFlagsHorizontal = (int)Control.SizeFlags.ExpandFill;
+		optionButton.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 
 		foreach (var item in items)
 			optionButton.AddItem($"{item}".AddSpaceBeforeEachCapital());

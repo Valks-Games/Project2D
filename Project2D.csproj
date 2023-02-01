@@ -1,9 +1,9 @@
-<Project Sdk="Godot.NET.Sdk/4.0.0-beta.10">
+<Project Sdk="Godot.NET.Sdk/4.0.0-beta.17">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-	<LangVersion>10</LangVersion>
+    <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>11</LangVersion>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!--Required in Godot 4 or Newtonsoft will not be found-->
   </PropertyGroup>
   <ItemGroup>

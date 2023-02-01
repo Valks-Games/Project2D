@@ -148,7 +148,7 @@ public partial class World : Node
 		
 		// Adding s adds hardcoded offset to align with godots grid
 		// Also offset by (-chunkSize / 2) to center chunk
-		var posVec3 = new Vector3(s + (-chunkSize / 2) + tileChunkPos.x, s + (-chunkSize / 2) + tileChunkPos.y, 0);
+		var posVec3 = new Vector3(s + (-chunkSize / 2) + tileChunkPos.X, s + (-chunkSize / 2) + tileChunkPos.Y, 0);
 
 		var i = 0;
 		var v = 0;
@@ -201,8 +201,8 @@ public partial class World : Node
 			{
 				// Increasing the fractal weighted strength to the maximum value (1) seems
 				// to get rid of any river loops, mini lakes and other artifacts
-				var noise1 = RiverNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z);
-				var noise2 = RiverSpreadNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z);
+				var noise1 = RiverNoise.GetNoise2D(chunkPos.X + x, chunkPos.Y + z);
+				var noise2 = RiverSpreadNoise.GetNoise2D(chunkPos.X + x, chunkPos.Y + z);
 
 				var wetLand = new MoistureHeat
 					{
@@ -228,8 +228,8 @@ public partial class World : Node
 				if (noise1 is > 0.04f and < 0.06f)
 					moistureHeatData[x, z] = water;
 
-				var noise3 = OceanNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1;
-				var noise4 = OceanSpreadNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1;
+				var noise3 = OceanNoise.GetNoise2D(chunkPos.X + x, chunkPos.Y + z) + 1;
+				var noise4 = OceanSpreadNoise.GetNoise2D(chunkPos.X + x, chunkPos.Y + z) + 1;
 
 				// ensure wetland is around ocean
 				if (noise3 is < 0.51f)
@@ -314,7 +314,7 @@ public partial class World : Node
 			{
 				var moistureValue = Mathf.Clamp
 					(
-						(MoistureNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
+						(MoistureNoise.GetNoise2D(chunkPos.X + x, chunkPos.Y + z) + 1 
 							+ moistureWet
 							- moistureDry) * (2 - moistureStrength)
 							, 0, 1
@@ -322,7 +322,7 @@ public partial class World : Node
 
 				var heatValue = Mathf.Clamp
 					(
-						(HeatNoise.GetNoise2d(chunkPos.x + x, chunkPos.y + z) + 1 
+						(HeatNoise.GetNoise2D(chunkPos.X + x, chunkPos.Y + z) + 1 
 							+ temperatureHot
 							- temperatureCold) * (2 - temperatureStrength)
 							, 0, 1
