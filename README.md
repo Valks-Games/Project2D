@@ -1,9 +1,10 @@
 ![Capture](https://user-images.githubusercontent.com/6277739/210028655-e4a7f89a-147c-4608-a024-28cd83c8fd39.PNG)
 ![1](https://user-images.githubusercontent.com/6277739/210111574-8ae1b585-19a6-49de-9df2-bf4bd2435031.PNG)
+![Capture](https://user-images.githubusercontent.com/6277739/211099774-af5e502a-5598-46c4-8c54-ff4582992677.PNG)
 
 Playing around with biome generation, might become something more, who knows.
 
-Contact me on Discord `valk#9904` for any questions you may have.
+Contact me on Discord `va#9904` for any questions you may have.
 
 ## Roadmap
 - [ ] chunks generate when camera moves around
